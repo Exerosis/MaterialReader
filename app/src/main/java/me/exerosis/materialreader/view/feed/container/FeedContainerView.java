@@ -11,7 +11,7 @@ import me.exerosis.materialreader.view.feed.container.holder.FeedNavigationHolde
 import me.exerosis.mvc.butterknife.ButterKnifeContainerView;
 
 public class FeedContainerView extends ButterKnifeContainerView implements FeedContainer {
-    @BindView(R.id.feed_view_navigation_list)
+    @BindView(R.id.feed_container_view_navigation_list)
     protected RecyclerView navigationList;
 
     public FeedContainerView(@NonNull LayoutInflater inflater) {

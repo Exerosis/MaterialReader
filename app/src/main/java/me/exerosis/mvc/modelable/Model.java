@@ -1,4 +1,4 @@
-package me.exerosis.modelable;
+package me.exerosis.mvc.modelable;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;

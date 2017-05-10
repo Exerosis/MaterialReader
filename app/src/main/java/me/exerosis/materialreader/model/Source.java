@@ -2,8 +2,8 @@ package me.exerosis.materialreader.model;
 
 import android.os.Parcel;
 
-import me.exerosis.modelable.Model;
-import me.exerosis.modelable.Modelable;
+import me.exerosis.mvc.modelable.Model;
+import me.exerosis.mvc.modelable.Modelable;
 
 public class Source implements Modelable {
     @Override

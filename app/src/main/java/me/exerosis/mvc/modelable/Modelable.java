@@ -1,4 +1,4 @@
-package me.exerosis.modelable;
+package me.exerosis.mvc.modelable;
 
 import android.os.Parcel;
 import android.os.Parcelable;

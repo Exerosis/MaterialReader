@@ -13,8 +13,10 @@ import java.util.List;
 
 import me.exerosis.materialreader.controller.feed.FeedFragment;
 import me.exerosis.materialreader.model.Source;
+import me.exerosis.materialreader.model.featcher.FeedStore;
 import me.exerosis.materialreader.view.feed.container.FeedContainerView;
 import me.exerosis.materialreader.view.feed.container.holder.FeedNavigationHolderView;
+import me.exerosis.mvc.rxjava.ObservableAdapter;
 
 public class FeedContainerActivity extends AppCompatActivity implements FeedContainerController {
     private final List<SyndFeed> feeds = new ArrayList<>();
@@ -24,6 +26,8 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
     protected void onCreate(@Nullable Bundle in) {
         super.onCreate(in);
         view = new FeedContainerView(getLayoutInflater());
+        view.setAdapter(new ObservableAdapter<>(FeedStore.getFeeds(), (holder, data) -> {
+        }, parent -> new FeedNavigationHolderView(getLayoutInflater(), parent).setListener(this)));
         view.setAdapter(new RecyclerView.Adapter<FeedNavigationHolderView>() {
             @Override
             public FeedNavigationHolderView onCreateViewHolder(ViewGroup parent, int type) {
