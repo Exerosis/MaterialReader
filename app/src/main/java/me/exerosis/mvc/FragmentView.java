@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 public class FragmentView implements ViewBase {
     private final View view;
 
-    public FragmentView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container, @LayoutRes int layout) {
+    public FragmentView(@NonNull LayoutInflater inflater, ViewGroup container, @LayoutRes int layout) {
         view = inflater.inflate(layout, container, false);
         if (view == null)
             throw new InflateException("View failed to inflate!");

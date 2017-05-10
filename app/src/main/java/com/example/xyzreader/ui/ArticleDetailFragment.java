@@ -144,8 +144,8 @@ public class ArticleDetailFragment extends Fragment implements
             @Override
             public void onClick(View view) {
                 startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(getActivity())
-                        .setType("text/plain")
-                        .setText("Some sample text")
+                        .setType("textView/plain")
+                        .setText("Some sample textView")
                         .getIntent(), getString(R.string.action_share)));
             }
         });

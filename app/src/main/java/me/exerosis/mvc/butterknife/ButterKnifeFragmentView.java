@@ -1,4 +1,4 @@
-package me.exerosis.materialreader;
+package me.exerosis.mvc.butterknife;
 
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;

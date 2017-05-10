@@ -1,4 +1,4 @@
-package me.exerosis.materialreader.view;
+package me.exerosis.materialreader.view.feed;
 
 import me.exerosis.mvc.ViewBase;
 

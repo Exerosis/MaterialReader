@@ -20,4 +20,22 @@ public class Source implements Modelable {
     public int describeContents() {
         return 0;
     }
+
+
+    public static Modelable.Creator CREATOR = new Creator() {
+        @Override
+        public Object createFromModel(Model in) {
+            return null;
+        }
+
+        @Override
+        public Object createFromParcel(Parcel in) {
+            return null;
+        }
+
+        @Override
+        public Object[] newArray(int size) {
+            return new Object[0];
+        }
+    };
 }
