@@ -20,8 +20,6 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
         view = new FeedContainerView(getLayoutInflater());
 
         setSupportActionBar(view.getToolbar());
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
 
         view.setAdapter(new ObservableAdapter<>(FeedStore.getFeeds(this), FeedNavigationHolderView::setFeed,
                 parent -> new FeedNavigationHolderView(getLayoutInflater(), parent).setListener(this)));
