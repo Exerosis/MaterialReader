@@ -4,9 +4,8 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 
-import com.example.xyzreader.R;
-
 import butterknife.BindView;
+import me.exerosis.materialreader.R;
 import me.exerosis.materialreader.view.feed.container.holder.FeedNavigationHolderView;
 import me.exerosis.mvc.butterknife.ButterKnifeContainerView;
 

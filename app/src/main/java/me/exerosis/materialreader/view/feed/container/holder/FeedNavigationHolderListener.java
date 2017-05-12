@@ -1,7 +1,7 @@
 package me.exerosis.materialreader.view.feed.container.holder;
 
-import com.rometools.rome.feed.synd.SyndFeed;
+import me.exerosis.materialreader.model.FeedModel;
 
 public interface FeedNavigationHolderListener {
-    void onClick(SyndFeed feed);
+    void onClick(FeedModel feed);
 }

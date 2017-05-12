@@ -28,10 +28,10 @@ dependencies {
     compile "com.android.support:cardview-v7:$androidSupportVersion"
     compile "com.android.support:design:$androidSupportVersion"
 
-    //--Retrofit Libraries--
-    compile "com.squareup.retrofit2:converter-gson:$retrofitVersion"
-    compile "com.squareup.retrofit2:adapter-rxjava:$retrofitVersion"
-    compile "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    //--Store Libraries--
+    compile "com.nytimes.android:store:$storeVersion"
+    compile "com.nytimes.android:cache:$storeVersion"
+    compile "com.nytimes.android:filesystem:$storeVersion"
 
     //--Butter Knife--
     compile 'com.jakewharton:butterknife:8.5.1'
@@ -40,7 +40,7 @@ dependencies {
     //--Other Libraries--
     compile 'com.squareup.okhttp3:okhttp:3.1.2'
     compile 'com.rometools:rome:1.7.2'
-    compile 'io.reactivex:rxjava:1.1.6'
+    compile 'com.squareup.okhttp3:okhttp:3.7.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.orhanobut:hawk:2.0.1'
 

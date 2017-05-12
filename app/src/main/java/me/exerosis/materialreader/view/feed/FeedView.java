@@ -8,9 +8,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.example.xyzreader.R;
-
 import butterknife.BindView;
+import me.exerosis.materialreader.R;
 import me.exerosis.materialreader.view.feed.holder.FeedEntryHolderView;
 import me.exerosis.mvc.butterknife.ButterKnifeFragmentView;
 
