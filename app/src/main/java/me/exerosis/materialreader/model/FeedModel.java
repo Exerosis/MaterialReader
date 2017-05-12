@@ -1,5 +1,6 @@
 package me.exerosis.materialreader.model;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -18,6 +19,10 @@ public class FeedModel implements Parcelable {
     private FeedModel(Observable<SyndFeed> feed, String url) {
         this.feed = feed;
         this.url = url;
+    }
+
+    public void refresh(Context context) {
+        FeedStore.refresh(context, url);
     }
 
     public Observable<SyndFeed> getSource() {
@@ -39,7 +44,7 @@ public class FeedModel implements Parcelable {
         @Override
         public Object createFromParcel(Parcel in) {
             String url = in.readString();
-            for (FeedModel feedModel : MaterialReader.getFeedsUnsafe())
+            for (FeedModel feedModel : FeedStore.getFeedsUnsafe())
                 if (feedModel.url.equals(url))
                     return feedModel;
             throw new IllegalStateException("Couldn't locate FeedModel");
