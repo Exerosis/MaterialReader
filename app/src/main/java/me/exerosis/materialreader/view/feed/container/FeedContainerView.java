@@ -23,7 +23,7 @@ public class FeedContainerView extends ButterKnifeContainerView implements FeedC
     public FeedContainerView(@NonNull LayoutInflater inflater) {
         super(inflater, R.layout.feed_container_view, R.id.feed_view_container);
         navigationList.setLayoutManager(new LinearLayoutManager(getRoot().getContext()));
-
+        navigationList.setHasFixedSize(true);
         // Set the drawer toggle as the DrawerListener
     }
 
@@ -38,8 +38,14 @@ public class FeedContainerView extends ButterKnifeContainerView implements FeedC
         navigationList.setAdapter(adapter);
     }
 
+
     @Override
     public Toolbar getToolbar() {
         return toolbar;
+    }
+
+    @Override
+    public DrawerLayout getDrawer() {
+        return drawer;
     }
 }

@@ -44,7 +44,8 @@ public class FeedStore {
         try {
             store = StoreBuilder.<String, BufferedSource, SyndFeed>parsedWithKey().
                     fetcher(url -> Observable.fromCallable(() ->
-                            CLIENT.newCall(new Request.Builder().url(url).get().build()).execute().body().source())).
+                            CLIENT.newCall(new Request.Builder().url(url).get().build()).execute().body().source()).
+                            subscribeOn(Schedulers.io())).
                     parser(source -> {
                         try {
                             return INPUT.build(new XmlReader(source.inputStream()));
@@ -62,7 +63,8 @@ public class FeedStore {
     public static void addSource(Context context, String url) {
         Schedulers.io().createWorker().schedule(() -> {
             prefs(context).edit().putString(url, UUID.randomUUID().toString()).commit();
-            feeds.add(FeedModel.obtain(getStore(context).getRefreshing(url), url));
+            FeedModel obtain = FeedModel.obtain(getStore(context).getRefreshing(url), url);
+            getFeeds(context).add(obtain);
             FEEDS_SUBJECT.onNext(feeds);
         });
     }
@@ -70,19 +72,25 @@ public class FeedStore {
     public static void removeSource(Context context, String url) {
         Schedulers.io().createWorker().schedule(() -> {
             prefs(context).edit().remove(url).commit();
-            feeds.add(FeedModel.obtain(getStore(context).getRefreshing(url), url));
+            getFeeds(context).add(FeedModel.obtain(getStore(context).getRefreshing(url), url));
             FEEDS_SUBJECT.onNext(feeds);
         });
     }
 
-    public static Observable<List<FeedModel>> getFeeds(Context context) {
+    public static List<FeedModel> getFeeds(Context context) {
         if (feeds != null)
-            return FEEDS_SUBJECT;
+            return feeds;
         feeds = new ArrayList<>();
 
         for (String url : prefs(context).getAll().keySet())
             feeds.add(FeedModel.obtain(getStore(context).getRefreshing(url), url));
 
+        return feeds;
+    }
+
+    public static Observable<List<FeedModel>> getFeedsSubject(Context context) {
+        if (FEEDS_SUBJECT.getValue() == null)
+            FEEDS_SUBJECT.onNext(getFeeds(context));
         return FEEDS_SUBJECT;
     }
 

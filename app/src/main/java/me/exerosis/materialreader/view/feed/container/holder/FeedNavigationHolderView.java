@@ -27,7 +27,8 @@ public class FeedNavigationHolderView extends ButterKnifeHolderView implements F
     @Override
     public void setFeed(FeedModel feed) {
         feed.getSource().subscribe(source -> {
-            Picasso.with(getRoot().getContext()).load(source.getImage().getUrl()).centerCrop().into(iconView);
+            if (source.getImage() != null)
+                Picasso.with(getRoot().getContext()).load(source.getImage().getUrl()).centerCrop().into(iconView);
             textView.setText(source.getTitle());
             iconView.setContentDescription(source.getTitle());
         });

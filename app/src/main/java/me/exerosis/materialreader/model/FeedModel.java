@@ -7,6 +7,7 @@ import android.os.Parcelable;
 import com.rometools.rome.feed.synd.SyndFeed;
 
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 
 public class FeedModel implements Parcelable {
     private Observable<SyndFeed> feed;
@@ -17,7 +18,7 @@ public class FeedModel implements Parcelable {
     }
 
     private FeedModel(Observable<SyndFeed> feed, String url) {
-        this.feed = feed;
+        this.feed = feed.observeOn(AndroidSchedulers.mainThread());
         this.url = url;
     }
 

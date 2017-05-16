@@ -1,30 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="64dp">
-
-    <ImageView
-        android:id="@+id/feed_navigation_view_holder_icon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        app:srcCompat="@mipmap/ic_launcher"
-        tools:ignore="ContentDescription" />
+    android:layout_height="48dp"
+    android:background="@drawable/selector_row">
 
     <TextView
         android:id="@+id/feed_navigation_view_holder_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        android:layout_margin="8dp"
-        android:layout_toEndOf="@id/feed_navigation_view_holder_icon"
-        android:textAppearance="@android:style/TextAppearance.Material.Large"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="72dp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="#87000000"
+        android:textSize="14sp"
         tools:text="Wired" />
+
+    <ImageView
+        android:id="@+id/feed_navigation_view_holder_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:background="@drawable/ic_circle"
+        tools:ignore="ContentDescription" />
 
 
 </RelativeLayout>
