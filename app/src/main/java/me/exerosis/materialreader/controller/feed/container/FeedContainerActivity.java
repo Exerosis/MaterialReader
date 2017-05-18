@@ -4,17 +4,20 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
+
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 
 import me.exerosis.materialreader.R;
 import me.exerosis.materialreader.controller.feed.FeedFragment;
 import me.exerosis.materialreader.model.FeedModel;
 import me.exerosis.materialreader.model.FeedStore;
 import me.exerosis.materialreader.view.feed.container.FeedContainerView;
-import me.exerosis.materialreader.view.feed.container.holder.FeedNavigationHolderView;
-import me.exerosis.mvc.rxjava.ObservableAdapter;
 
 public class FeedContainerActivity extends AppCompatActivity implements FeedContainerController {
+    private final BiMap<FeedModel, MenuItem> feeds = HashBiMap.create();
     private FeedContainerView view;
 
     @Override
@@ -22,7 +25,10 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
         super.onCreate(in);
         view = new FeedContainerView(getLayoutInflater());
 
+        //--Toolbar--
         setSupportActionBar(view.getToolbar());
+
+        //--Toggle--
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, view.getDrawer(), view.getToolbar(), R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerOpened(View drawerView) {
@@ -37,23 +43,29 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
         view.getDrawer().addDrawerListener(toggle);
         toggle.syncState();
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //--Feeds--
+        for (FeedModel model : FeedStore.getFeeds(this))
+            model.getSource().subscribe(feed -> feeds.put(model, view.addFeed(feed)));
 
-        view.setAdapter(new ObservableAdapter<>(FeedStore.getFeedsSubject(this), FeedNavigationHolderView::setFeed,
-                parent -> new FeedNavigationHolderView(getLayoutInflater(), parent).setListener(this), (feed, holder) -> {
-            view.getDrawer().closeDrawers();
-            display(feed);
-        }).selectSingle());
+        FeedStore.getAddSubject().subscribe(model -> model.getSource().subscribe(feed -> feeds.put(model, view.addFeed(feed))));
+        FeedStore.getRemoveSubject().subscribe(model -> view.removeFeed(feeds.get(model)));
 
+        view.setListener(item -> {
+            for (MenuItem menuItem : feeds.values())
+                menuItem.setChecked(false);
+
+            item.setChecked(true);
+            if (!feeds.inverse().containsKey(item))
+                return false;
+            display(feeds.inverse().get(item));
+            return true;
+        });
         display(FeedStore.getFeeds(this).get(0));
         setContentView(view.getRoot());
     }
 
-    private void display(FeedModel feed) {
-        getSupportFragmentManager().beginTransaction().disallowAddToBackStack().replace(view.getContainerID(), FeedFragment.newInstance(feed)).commit();
-    }
-
-    @Override
-    public void onClick(FeedModel feed) {
+    private void display(FeedModel model) {
+        FeedFragment fragment = FeedFragment.newInstance(model);
+        getSupportFragmentManager().beginTransaction().disallowAddToBackStack().replace(view.getContainerID(), fragment).commit();
     }
 }

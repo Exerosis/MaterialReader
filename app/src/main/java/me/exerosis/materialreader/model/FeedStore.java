@@ -21,14 +21,15 @@ import okhttp3.Request;
 import okio.BufferedSource;
 import rx.Observable;
 import rx.schedulers.Schedulers;
-import rx.subjects.BehaviorSubject;
+import rx.subjects.PublishSubject;
 
 import static android.content.Context.MODE_PRIVATE;
 
 @SuppressLint("ApplySharedPref")
 public class FeedStore {
     private static final String PREFS_FEEDS = "feeds";
-    private static final BehaviorSubject<List<FeedModel>> FEEDS_SUBJECT = BehaviorSubject.create(new ArrayList<>());
+    private static final PublishSubject<FeedModel> ADD_SUBJECT = PublishSubject.create();
+    private static final PublishSubject<FeedModel> REMOVE_SUBJECT = PublishSubject.create();
     private static final OkHttpClient CLIENT = new OkHttpClient();
     private static final SyndFeedInput INPUT = new SyndFeedInput();
     private static Store<SyndFeed, String> store;
@@ -63,17 +64,17 @@ public class FeedStore {
     public static void addSource(Context context, String url) {
         Schedulers.io().createWorker().schedule(() -> {
             prefs(context).edit().putString(url, UUID.randomUUID().toString()).commit();
-            FeedModel obtain = FeedModel.obtain(getStore(context).getRefreshing(url), url);
-            getFeeds(context).add(obtain);
-            FEEDS_SUBJECT.onNext(feeds);
+            FeedModel feed = FeedModel.obtain(getStore(context).getRefreshing(url), url);
+            getFeeds(context).add(feed);
+            ADD_SUBJECT.onNext(feed);
         });
     }
 
-    public static void removeSource(Context context, String url) {
+    public static void removeSource(Context context, FeedModel feed) {
         Schedulers.io().createWorker().schedule(() -> {
-            prefs(context).edit().remove(url).commit();
-            getFeeds(context).add(FeedModel.obtain(getStore(context).getRefreshing(url), url));
-            FEEDS_SUBJECT.onNext(feeds);
+            prefs(context).edit().remove(feed.getUrl()).commit();
+            getFeeds(context).remove(feed);
+            REMOVE_SUBJECT.onNext(feed);
         });
     }
 
@@ -89,15 +90,16 @@ public class FeedStore {
                 String url = "http://feeds.gawker.com/lifehacker/full.xml";
                 prefs(context).edit().putString(url, UUID.randomUUID().toString()).commit();
                 feeds.add(FeedModel.obtain(getStore(context).getRefreshing(url), url));
-                FEEDS_SUBJECT.onNext(feeds);
             });
         return feeds;
     }
 
-    public static Observable<List<FeedModel>> getFeedsSubject(Context context) {
-        if (FEEDS_SUBJECT.getValue() == null)
-            FEEDS_SUBJECT.onNext(getFeeds(context));
-        return FEEDS_SUBJECT;
+    public static Observable<FeedModel> getAddSubject() {
+        return ADD_SUBJECT;
+    }
+
+    public static Observable<FeedModel> getRemoveSubject() {
+        return REMOVE_SUBJECT;
     }
 
     public static List<FeedModel> getFeedsUnsafe() {

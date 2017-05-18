@@ -26,6 +26,10 @@ public class FeedModel implements Parcelable {
         FeedStore.refresh(context, url);
     }
 
+    public String getUrl() {
+        return url;
+    }
+
     public Observable<SyndFeed> getSource() {
         return feed;
     }
@@ -38,7 +42,6 @@ public class FeedModel implements Parcelable {
     @Override
     public void writeToParcel(Parcel out, int flags) {
         out.writeString(url);
-        url = null;
     }
 
     public static Parcelable.Creator CREATOR = new Creator() {
