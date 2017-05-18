@@ -44,23 +44,25 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
         toggle.syncState();
 
         //--Feeds--
+        view.setListener(item -> {
+            for (MenuItem menuItem : feeds.values())
+                menuItem.setChecked(false);
+
+            item.setChecked(true);
+            if (item.getItemId() == R.id.feed_container_view_menu_add)
+                return false;
+            if (!feeds.inverse().containsKey(item))
+                return false;
+            display(feeds.inverse().get(item));
+            return true;
+        });
+
         for (FeedModel model : FeedStore.getFeeds(this))
             model.getSource().subscribe(feed -> feeds.put(model, view.addFeed(feed)));
 
         FeedStore.getAddSubject().subscribe(model -> model.getSource().subscribe(feed -> feeds.put(model, view.addFeed(feed))));
         FeedStore.getRemoveSubject().subscribe(model -> view.removeFeed(feeds.get(model)));
 
-        view.setListener(item -> {
-            for (MenuItem menuItem : feeds.values())
-                menuItem.setChecked(false);
-
-            item.setChecked(true);
-            if (!feeds.inverse().containsKey(item))
-                return false;
-            display(feeds.inverse().get(item));
-            return true;
-        });
-        display(FeedStore.getFeeds(this).get(0));
         setContentView(view.getRoot());
     }
 

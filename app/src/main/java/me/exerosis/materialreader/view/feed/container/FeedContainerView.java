@@ -31,7 +31,7 @@ public class FeedContainerView extends ButterKnifeContainerView implements FeedC
     private NavigationView.OnNavigationItemSelectedListener listener;
 
     public FeedContainerView(@NonNull LayoutInflater inflater) {
-        super(inflater, R.layout.feed_container_view, R.id.feed_view_container);
+        super(inflater, R.layout.feed_container_view, R.id.feed_container_view);
         navigation.setNavigationItemSelectedListener(item -> {
             drawer.closeDrawer(GravityCompat.START);
             return listener.onNavigationItemSelected(item);
@@ -50,7 +50,7 @@ public class FeedContainerView extends ButterKnifeContainerView implements FeedC
 
     @Override
     public MenuItem addFeed(SyndFeed feed) {
-        MenuItem item = navigation.getMenu().add(R.id.navigation_menu_feeds, menuId++, Menu.NONE, feed.getTitle());
+        MenuItem item = navigation.getMenu().add(R.id.feed_container_view_menu, menuId++, Menu.NONE, feed.getTitle());
         if (feed.getImage() != null)
             Picasso.with(getRoot().getContext()).load(feed.getImage().getUrl()).centerCrop().into(new Target() {
                 @Override
@@ -68,6 +68,9 @@ public class FeedContainerView extends ButterKnifeContainerView implements FeedC
             });
         else
             item.setIcon(R.drawable.ic_menu_gallery);
+        if (menuId == 1 && listener != null)
+            listener.onNavigationItemSelected(item);
+        item.setCheckable(true);
         return item;
     }
 
