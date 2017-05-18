@@ -84,7 +84,13 @@ public class FeedStore {
 
         for (String url : prefs(context).getAll().keySet())
             feeds.add(FeedModel.obtain(getStore(context).getRefreshing(url), url));
-
+        if (feeds.size() == 0)
+            Schedulers.io().createWorker().schedule(() -> {
+                String url = "http://feeds.gawker.com/lifehacker/full.xml";
+                prefs(context).edit().putString(url, UUID.randomUUID().toString()).commit();
+                feeds.add(FeedModel.obtain(getStore(context).getRefreshing(url), url));
+                FEEDS_SUBJECT.onNext(feeds);
+            });
         return feeds;
     }
 

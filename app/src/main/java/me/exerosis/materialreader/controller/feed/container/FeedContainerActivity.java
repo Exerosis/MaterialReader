@@ -22,8 +22,6 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
         super.onCreate(in);
         view = new FeedContainerView(getLayoutInflater());
 
-        FeedStore.addSource(this, "http://feeds.gawker.com/lifehacker/full.xml");
-
         setSupportActionBar(view.getToolbar());
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, view.getDrawer(), view.getToolbar(), R.string.drawer_open, R.string.drawer_close) {
             @Override
@@ -57,6 +55,5 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
 
     @Override
     public void onClick(FeedModel feed) {
-        getSupportFragmentManager().beginTransaction().disallowAddToBackStack().replace(view.getContainerID(), FeedFragment.newInstance(null)).commit();
     }
 }

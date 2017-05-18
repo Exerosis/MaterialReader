@@ -21,7 +21,7 @@ public class FeedFragment extends Fragment implements FeedController {
 
     @Override
     public void onCreate(@Nullable Bundle in) {
-        feed = (FeedModel) getArguments().getSerializable(ARG_FEED);
+        feed = getArguments().getParcelable(ARG_FEED);
         super.onCreate(in);
     }
 
