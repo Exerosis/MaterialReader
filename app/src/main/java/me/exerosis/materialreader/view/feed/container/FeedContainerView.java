@@ -22,11 +22,11 @@ import me.exerosis.mvc.butterknife.ButterKnifeContainerView;
 
 public class FeedContainerView extends ButterKnifeContainerView implements FeedContainer {
     @BindView(R.id.feed_container_view_navigation)
-    protected NavigationView navigation;
+    NavigationView navigation;
     @BindView(R.id.feed_container_view_drawer)
-    protected DrawerLayout drawer;
+    DrawerLayout drawer;
     @BindView(R.id.feed_container_view_toolbar)
-    protected Toolbar toolbar;
+    Toolbar toolbar;
     private int menuId = 0;
     private NavigationView.OnNavigationItemSelectedListener listener;
 

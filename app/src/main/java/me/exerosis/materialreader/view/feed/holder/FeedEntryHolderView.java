@@ -16,7 +16,7 @@ public class FeedEntryHolderView extends ButterKnifeHolderView implements FeedEn
     private FeedEntryListener listener;
 
     @BindView(R.id.feed_entry_title)
-    protected TextView title;
+    TextView title;
 
     public FeedEntryHolderView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
         super(inflater, container, R.layout.feed_entry_holder_view);

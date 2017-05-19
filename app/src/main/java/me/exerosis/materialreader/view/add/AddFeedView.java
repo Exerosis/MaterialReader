@@ -16,13 +16,13 @@ import static android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE;
 
 public class AddFeedView extends ButterKnifeFragmentView implements AddFeed {
     @BindView(R.id.add_feed_input)
-    protected EditText input;
+    EditText input;
     @BindString(R.string.add_stock_text)
-    protected String text;
+    String text;
     @BindString(R.string.add_stock_add)
-    protected String add;
+    String add;
     @BindString(R.string.add_stock_cancel)
-    protected String cancel;
+    String cancel;
 
     private AddFeedListener listener;
 

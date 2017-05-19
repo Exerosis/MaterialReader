@@ -15,14 +15,19 @@ import me.exerosis.mvc.butterknife.ButterKnifeFragmentView;
 
 public class FeedView extends ButterKnifeFragmentView implements Feed {
     @BindView(R.id.feed_view_entries)
-    protected RecyclerView entries;
+    RecyclerView entries;
     @BindView(R.id.feed_view_refresh_layout)
-    protected SwipeRefreshLayout refreshLayout;
+    SwipeRefreshLayout refreshLayout;
     private FeedListener listener;
 
     public FeedView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
         super(inflater, container, R.layout.feed_view);
         entries.setLayoutManager(new LinearLayoutManager(getRoot().getContext()));
+    }
+
+    @Override
+    public void setRefreshing(boolean refreshing) {
+        refreshLayout.setRefreshing(refreshing);
     }
 
     @SuppressWarnings("unchecked")

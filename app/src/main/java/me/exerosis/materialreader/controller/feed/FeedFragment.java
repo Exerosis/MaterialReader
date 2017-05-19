@@ -21,6 +21,15 @@ public class FeedFragment extends Fragment implements FeedController {
     private static final String ARG_FEED = "FEED";
     private String url;
     private Store<SyndFeed, String> store;
+    private FeedView view;
+
+    public static FeedFragment newInstance(String url) {
+        Bundle bundle = new Bundle();
+        bundle.putString(ARG_FEED, url);
+        FeedFragment fragment = new FeedFragment();
+        fragment.setArguments(bundle);
+        return fragment;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle in) {
@@ -30,14 +39,8 @@ public class FeedFragment extends Fragment implements FeedController {
     }
 
     @Override
-    public void onRefresh() {
-        if (url != null)
-            store.clear(url);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        FeedView view = new FeedView(inflater, container);
+        view = new FeedView(inflater, container);
         view.setListener(this);
         view.setAdapter(new ObservableAdapter<>(store.getRefreshing(url).map(SyndFeed::getEntries).observeOn(AndroidSchedulers.mainThread()), FeedEntryHolderView::setEntry, parent ->
                 new FeedEntryHolderView(LayoutInflater.from(getContext()), parent).setListener(this)));
@@ -45,12 +48,10 @@ public class FeedFragment extends Fragment implements FeedController {
         return view.getRoot();
     }
 
-    public static FeedFragment newInstance(String url) {
-        Bundle bundle = new Bundle();
-        bundle.putString(ARG_FEED, url);
-        FeedFragment fragment = new FeedFragment();
-        fragment.setArguments(bundle);
-        return fragment;
+    @Override
+    public void onRefresh() {
+        if (url != null)
+            store.clear(url);
     }
 
     @Override

@@ -9,7 +9,7 @@ import butterknife.ButterKnife;
 import me.exerosis.mvc.FragmentView;
 
 public class ButterKnifeFragmentView extends FragmentView {
-    public ButterKnifeFragmentView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container, @LayoutRes int layout) {
+    public ButterKnifeFragmentView(@NonNull LayoutInflater inflater, ViewGroup container, @LayoutRes int layout) {
         super(inflater, container, layout);
         ButterKnife.bind(this, getRoot());
     }

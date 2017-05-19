@@ -1,6 +1,20 @@
 <resources>
-
     <string name="app_name">XYZ Reader</string>
+
+    <string name="drawer_open">Drawer Open</string>
+    <string name="drawer_close">Drawer Close</string>
+    <string name="menu_add_feed">Add Feed</string>
+
+    <string name="dialog_hint">https://www.wired.com/feed/</string>
+    <string name="add_stock_text">Add Feed</string>
+    <string name="add_stock_add">Add</string>
+    <string name="add_stock_cancel">Cancel</string>
+
+    <string name="error_feed">Invalid Feed URL</string>
+    <string name="error_url">Invalid URL</string>
+    <string name="error_duplicate">Feed Present</string>
+
+
     <string name="welcome_xyz_reader">Welcome to XYZ Reader!</string>
 
     <string name="action_refresh">Refresh</string>
@@ -8,14 +22,5 @@
     <string name="action_share">Share</string>
 
     <string name="up">Up</string>
-    <string name="drawer_open">\"Drawer Open\"</string>
-    <string name="drawer_close">\"Drawer Close\"</string>
-    <string name="menu_add_feed">Add Feed</string>
-    <string name="dialog_hint">https://www.wired.com/feed/</string>
-    <string name="add_stock_text">Add Feed</string>
-    <string name="add_stock_add">Add</string>
-    <string name="add_stock_cancel">Cancel</string>
-    <string name="error_feed">Invalid Feed URL</string>
-    <string name="error_url">Invalid URL</string>
-
+    <string name="error_network">Device Offline</string>
 </resources>
