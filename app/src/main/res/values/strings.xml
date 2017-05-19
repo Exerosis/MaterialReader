@@ -15,5 +15,7 @@
     <string name="add_stock_text">Add Feed</string>
     <string name="add_stock_add">Add</string>
     <string name="add_stock_cancel">Cancel</string>
+    <string name="error_feed">Invalid Feed URL</string>
+    <string name="error_url">Invalid URL</string>
 
 </resources>

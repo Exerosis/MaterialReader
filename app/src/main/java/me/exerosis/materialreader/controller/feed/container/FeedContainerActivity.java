@@ -1,5 +1,6 @@
 package me.exerosis.materialreader.controller.feed.container;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -9,24 +10,33 @@ import android.view.View;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.nytimes.android.external.store.base.impl.Store;
+import com.rometools.rome.feed.synd.SyndFeed;
+
+import java.net.MalformedURLException;
 
 import me.exerosis.materialreader.R;
 import me.exerosis.materialreader.controller.add.AddStockDialog;
 import me.exerosis.materialreader.controller.feed.FeedFragment;
-import me.exerosis.materialreader.model.FeedModel;
-import me.exerosis.materialreader.model.FeedStore;
+import me.exerosis.materialreader.model.MaterialReader;
 import me.exerosis.materialreader.view.feed.container.FeedContainerView;
 
 public class FeedContainerActivity extends AppCompatActivity implements FeedContainerController {
     public static final String TAG_DIALOG = "AddStockDialog";
-    private final BiMap<FeedModel, MenuItem> feeds = HashBiMap.create();
+    private final BiMap<String, MenuItem> feeds = HashBiMap.create();
     private FeedContainerView view;
     private AddStockDialog dialog;
+    private Store<SyndFeed, String> store;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(@Nullable Bundle in) {
         super.onCreate(in);
         view = new FeedContainerView(getLayoutInflater());
+        store = ((MaterialReader) getApplicationContext()).getStore();
+        prefs = ((MaterialReader) getApplicationContext()).getSharedPreferences();
+
+        //--Dialog--
         dialog = new AddStockDialog();
         dialog.setListener(this);
 
@@ -49,33 +59,27 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
         toggle.syncState();
 
         //--Feeds--
+        for (String url : prefs.getAll().keySet())
+            store.getRefreshing(url).subscribe(feed -> feeds.put(url, view.addFeed(feed)));
+
         view.setListener(item -> {
             if (item.getItemId() == R.id.feed_container_view_menu_add) {
                 dialog.show(getSupportFragmentManager(), TAG_DIALOG);
-                return false;
+                return true;
             }
 
-            for (MenuItem menuItem : feeds.values())
-                menuItem.setChecked(false);
-
-            if (!feeds.inverse().containsKey(item))
+            if (feeds.inverse().containsKey(item))
                 return false;
             display(feeds.inverse().get(item));
             return true;
         });
 
-        for (FeedModel model : FeedStore.getFeeds(this))
-            model.getSource().subscribe(feed -> feeds.put(model, view.addFeed(feed)));
-
-        FeedStore.getAddSubject().subscribe(model -> model.getSource().subscribe(feed -> feeds.put(model, view.addFeed(feed))));
-        FeedStore.getRemoveSubject().subscribe(model -> view.removeFeed(feeds.get(model)));
-
         setContentView(view.getRoot());
     }
 
-    private void display(FeedModel model) {
-        FeedFragment fragment = FeedFragment.newInstance(model);
-        getSupportFragmentManager().beginTransaction().disallowAddToBackStack().replace(view.getContainerID(), fragment).commit();
+
+    private void display(String url) {
+        getSupportFragmentManager().beginTransaction().disallowAddToBackStack().replace(view.getContainerID(), FeedFragment.newInstance(url)).commit();
     }
 
     @Override
@@ -85,6 +89,9 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
 
     @Override
     public void onAdd(String url) {
-        FeedStore.addSource(this, url);
+        store.getRefreshing(url).subscribe(feed -> {
+            feeds.put(url, view.addFeed(feed));
+            dialog.dismissAllowingStateLoss();
+        }, throwable -> dialog.showError(throwable instanceof MalformedURLException ? R.string.error_url : R.string.error_feed));
     }
 }
