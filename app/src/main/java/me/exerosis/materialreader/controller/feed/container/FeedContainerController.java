@@ -1,5 +1,7 @@
 package me.exerosis.materialreader.controller.feed.container;
 
-public interface FeedContainerController {
+import me.exerosis.materialreader.view.add.AddFeedListener;
+
+public interface FeedContainerController extends AddFeedListener {
 
 }
