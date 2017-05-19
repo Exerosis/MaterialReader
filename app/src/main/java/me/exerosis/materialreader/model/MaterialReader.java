@@ -26,10 +26,16 @@ public final class MaterialReader extends Application {
     public static final SyndFeedInput INPUT = new SyndFeedInput();
     private Store<SyndFeed, String> store;
 
-    @SuppressLint("ApplySharedPref")
     @Override
     public void onCreate() {
         super.onCreate();
+        getStore();
+    }
+
+    @SuppressLint("ApplySharedPref")
+    public Store<SyndFeed, String> getStore() {
+        if (store != null)
+            return store;
         try {
             store = StoreBuilder.<String, BufferedSource, SyndFeed>parsedWithKey().
                     fetcher(url -> Observable.fromCallable(() ->
@@ -52,9 +58,6 @@ public final class MaterialReader extends Application {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public Store<SyndFeed, String> getStore() {
         return store;
     }
 

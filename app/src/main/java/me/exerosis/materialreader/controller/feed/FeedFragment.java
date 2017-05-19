@@ -15,6 +15,7 @@ import me.exerosis.materialreader.model.MaterialReader;
 import me.exerosis.materialreader.view.feed.FeedView;
 import me.exerosis.materialreader.view.feed.holder.FeedEntryHolderView;
 import me.exerosis.mvc.rxjava.ObservableAdapter;
+import rx.android.schedulers.AndroidSchedulers;
 
 public class FeedFragment extends Fragment implements FeedController {
     private static final String ARG_FEED = "FEED";
@@ -38,7 +39,7 @@ public class FeedFragment extends Fragment implements FeedController {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         FeedView view = new FeedView(inflater, container);
         view.setListener(this);
-        view.setAdapter(new ObservableAdapter<>(store.getRefreshing(url).map(SyndFeed::getEntries), FeedEntryHolderView::setEntry, parent ->
+        view.setAdapter(new ObservableAdapter<>(store.getRefreshing(url).map(SyndFeed::getEntries).observeOn(AndroidSchedulers.mainThread()), FeedEntryHolderView::setEntry, parent ->
                 new FeedEntryHolderView(LayoutInflater.from(getContext()), parent).setListener(this)));
 
         return view.getRoot();
