@@ -19,7 +19,7 @@ import java.util.UUID;
 import me.exerosis.materialreader.R;
 import me.exerosis.materialreader.controller.add.AddStockDialog;
 import me.exerosis.materialreader.controller.feed.FeedFragment;
-import me.exerosis.materialreader.model.MaterialReader;
+import me.exerosis.materialreader.MaterialReader;
 import me.exerosis.materialreader.view.feed.container.FeedContainerView;
 import rx.android.schedulers.AndroidSchedulers;
 

@@ -11,7 +11,7 @@ import com.nytimes.android.external.store.base.impl.Store;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 
-import me.exerosis.materialreader.model.MaterialReader;
+import me.exerosis.materialreader.MaterialReader;
 import me.exerosis.materialreader.view.feed.FeedView;
 import me.exerosis.materialreader.view.feed.holder.FeedEntryHolderView;
 import me.exerosis.mvc.rxjava.ObservableAdapter;

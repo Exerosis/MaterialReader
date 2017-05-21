@@ -1,4 +1,4 @@
-package me.exerosis.materialreader.model;
+package me.exerosis.materialreader;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
