@@ -8,6 +8,7 @@ import android.widget.TextView;
 import com.rometools.rome.feed.synd.SyndEntry;
 
 import butterknife.BindView;
+import me.exerosis.materialreader.FeedUtils;
 import me.exerosis.materialreader.R;
 import me.exerosis.mvc.butterknife.ButterKnifeHolderView;
 
@@ -30,6 +31,10 @@ public class FeedEntryHolderView extends ButterKnifeHolderView implements FeedEn
     public void setEntry(SyndEntry entry) {
         this.entry = entry;
         title.setText(entry.getTitle());
+        FeedUtils.getImage(getRoot().getContext(), entry).subscribe(bitmap -> {
+            System.out.println(bitmap.getHeight());
+            System.out.println(bitmap.getWidth());
+        });
     }
 
     @Override

@@ -45,7 +45,8 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.orhanobut:hawk:2.0.1'
     compile 'io.reactivex:rxandroid:1.2.1'
-    compile 'com.google.guava:guava:11.0.2'
+    compile 'com.google.guava:guava:20.0'
+    compile 'org.jsoup:jsoup:1.10.2'
 
     //--Test Libraries--
     testCompile 'junit:junit:4.12'
