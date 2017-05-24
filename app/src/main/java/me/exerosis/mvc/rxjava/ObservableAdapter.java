@@ -46,14 +46,14 @@ public class ObservableAdapter<ViewHolder extends RecyclerView.ViewHolder, Data>
 
     public ObservableAdapter(Observable<List<Data>> dataObservable, Func1<Data, Integer> type, Action2<ViewHolder, Data> binder, Func2<ViewGroup, Integer, ViewHolder> creator, Action2<Data, ViewHolder> clickListener) {
         this.type = type;
-        dataObservable.subscribe(data -> {
-            this.data = data;
-            notifyDataSetChanged();
-        });
         this.binder = binder;
         this.creator = creator;
         if (clickListener != null)
             listeners.add(clickListener);
+        dataObservable.subscribe(data -> {
+            this.data = data;
+            notifyDataSetChanged();
+        });
     }
 
 

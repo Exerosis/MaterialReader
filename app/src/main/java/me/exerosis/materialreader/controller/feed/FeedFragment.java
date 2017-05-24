@@ -48,7 +48,7 @@ public class FeedFragment extends Fragment implements FeedController {
         view = new FeedView(inflater, container);
         view.setListener(this);
 
-        view.setAdapter(new ObservableAdapter<>(store.getRefreshing(url).map(SyndFeed::getEntries).flatMapIterable(l -> l).flatMap(entry -> FeedUtils.getImage(getContext(), entry), Pair::new).toList().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()), pair -> {
+        view.setAdapter(new ObservableAdapter<>(store.get(url).map(SyndFeed::getEntries).flatMapIterable(l -> l).flatMap(entry -> FeedUtils.getImage(getContext(), entry), Pair::new).toList().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()), pair -> {
             double ratio = Math.min(Math.round((((double) pair.second.getWidth()) / pair.second.getHeight()) * 2) / 2.0, 2);
             return ratio < 0.5 ? 1 : ratio < 1.5 ? 2 : 3;
         }, FeedEntryHolderView::setEntry, (parent, type) -> new FeedEntryHolderView(LayoutInflater.from(getContext()), parent, type == 1 ? R.layout.feed_entry_holder_view : type == 2 ? R.layout.feed_entry_holder_view : R.layout.feed_entry_holder_view).setListener(FeedFragment.this)));

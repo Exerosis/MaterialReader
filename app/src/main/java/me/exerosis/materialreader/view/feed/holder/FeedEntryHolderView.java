@@ -12,18 +12,25 @@ import android.widget.TextView;
 
 import com.rometools.rome.feed.synd.SyndEntry;
 
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 import butterknife.BindView;
 import me.exerosis.materialreader.R;
 import me.exerosis.mvc.butterknife.ButterKnifeHolderView;
 
 public class FeedEntryHolderView extends ButterKnifeHolderView implements FeedEntryHolder {
+    public static Format FORMAT_DATE = new SimpleDateFormat("MMM dd, yyyy", Locale.US);
     private Pair<SyndEntry, Bitmap> pair;
     private FeedEntryListener listener;
 
-    @BindView(R.id.feed_entry_title)
-    TextView title;
     @BindView(R.id.feed_entry_thumbnail)
     ImageView thumbnail;
+    @BindView(R.id.feed_entry_title)
+    TextView title;
+    @BindView(R.id.feed_entry_subtitle)
+    TextView subtitle;
 
     public FeedEntryHolderView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container, @LayoutRes int layout) {
         super(inflater, container, layout);
@@ -40,7 +47,7 @@ public class FeedEntryHolderView extends ButterKnifeHolderView implements FeedEn
     public void setEntry(Pair<SyndEntry, Bitmap> pair) {
         this.pair = pair;
         title.setText(pair.first.getTitle());
-
+        subtitle.setText(pair.first.getAuthor() + ", " + FORMAT_DATE.format(pair.first.getPublishedDate()));
         thumbnail.setImageBitmap(pair.second);
     }
 
