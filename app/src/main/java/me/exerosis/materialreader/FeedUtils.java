@@ -56,7 +56,7 @@ public class FeedUtils {
             e.printStackTrace();
         }
 
-        return null;
+        return Observable.just(null);
     }
 
     private static Observable<Bitmap> getBitmap(Context context, String url) {

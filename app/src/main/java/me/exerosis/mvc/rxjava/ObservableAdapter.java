@@ -15,23 +15,37 @@ public class ObservableAdapter<ViewHolder extends RecyclerView.ViewHolder, Data>
     private final List<Action2<Data, ViewHolder>> listeners = new ArrayList<>();
     private final Action2<ViewHolder, Data> binder;
     private final Func2<ViewGroup, Integer, ViewHolder> creator;
+    private final Func1<Data, Integer> type;
     private List<Data> data = new ArrayList<>();
     private boolean selectSingle = false;
     private ViewHolder selected;
 
     public ObservableAdapter(Observable<List<Data>> dataObservable, Action2<ViewHolder, Data> binder, Func1<ViewGroup, ViewHolder> creator) {
-        this(dataObservable, binder, creator, null);
+        this(dataObservable, entry -> 0, binder, creator, null);
+    }
+
+    public ObservableAdapter(Observable<List<Data>> dataObservable, Func1<Data, Integer> type, Action2<ViewHolder, Data> binder, Func1<ViewGroup, ViewHolder> creator) {
+        this(dataObservable, type, binder, creator, null);
     }
 
     public ObservableAdapter(Observable<List<Data>> dataObservable, Action2<ViewHolder, Data> binder, Func1<ViewGroup, ViewHolder> creator, Action2<Data, ViewHolder> clickListener) {
-        this(dataObservable, binder, (parent, type) -> creator.call(parent), clickListener);
+        this(dataObservable, entry -> 0, binder, (parent, type) -> creator.call(parent), clickListener);
+    }
+
+    public ObservableAdapter(Observable<List<Data>> dataObservable, Func1<Data, Integer> viewTyper, Action2<ViewHolder, Data> binder, Func1<ViewGroup, ViewHolder> creator, Action2<Data, ViewHolder> clickListener) {
+        this(dataObservable, viewTyper, binder, (parent, type) -> creator.call(parent), clickListener);
     }
 
     public ObservableAdapter(Observable<List<Data>> dataObservable, Action2<ViewHolder, Data> binder, Func2<ViewGroup, Integer, ViewHolder> creator) {
-        this(dataObservable, binder, creator, null);
+        this(dataObservable, entry -> 0, binder, creator);
     }
 
-    public ObservableAdapter(Observable<List<Data>> dataObservable, Action2<ViewHolder, Data> binder, Func2<ViewGroup, Integer, ViewHolder> creator, Action2<Data, ViewHolder> clickListener) {
+    public ObservableAdapter(Observable<List<Data>> dataObservable, Func1<Data, Integer> type, Action2<ViewHolder, Data> binder, Func2<ViewGroup, Integer, ViewHolder> creator) {
+        this(dataObservable, type, binder, creator, null);
+    }
+
+    public ObservableAdapter(Observable<List<Data>> dataObservable, Func1<Data, Integer> type, Action2<ViewHolder, Data> binder, Func2<ViewGroup, Integer, ViewHolder> creator, Action2<Data, ViewHolder> clickListener) {
+        this.type = type;
         dataObservable.subscribe(data -> {
             this.data = data;
             notifyDataSetChanged();
@@ -41,6 +55,7 @@ public class ObservableAdapter<ViewHolder extends RecyclerView.ViewHolder, Data>
         if (clickListener != null)
             listeners.add(clickListener);
     }
+
 
     public ObservableAdapter<ViewHolder, Data> selectSingle() {
         selectSingle ^= true;
@@ -54,6 +69,11 @@ public class ObservableAdapter<ViewHolder extends RecyclerView.ViewHolder, Data>
         } else
             listeners.add(listener);
         return listener;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return type.call(data.get(position));
     }
 
     @Override

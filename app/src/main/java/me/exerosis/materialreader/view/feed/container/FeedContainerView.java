@@ -20,7 +20,10 @@ import butterknife.BindView;
 import me.exerosis.materialreader.R;
 import me.exerosis.mvc.butterknife.ButterKnifeContainerView;
 
+import static java.lang.String.format;
+
 public class FeedContainerView extends ButterKnifeContainerView implements FeedContainer {
+    private static final String FORMAT_FAVICON = "https://www.google.com/s2/favicons?domain=%s";
     @BindView(R.id.feed_container_view_navigation)
     NavigationView navigation;
     @BindView(R.id.feed_container_view_drawer)
@@ -51,23 +54,27 @@ public class FeedContainerView extends ButterKnifeContainerView implements FeedC
     @Override
     public MenuItem addFeed(SyndFeed feed) {
         MenuItem item = navigation.getMenu().add(R.id.feed_container_view_menu, menuId++, Menu.NONE, feed.getTitle());
-        if (feed.getImage() != null)
-            Picasso.with(getRoot().getContext()).load(feed.getImage().getUrl()).centerCrop().into(new Target() {
-                @Override
-                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                    item.setIcon(new BitmapDrawable(getRoot().getResources(), bitmap));
-                }
+        Picasso.with(getRoot().getContext()).
+                load(format(FORMAT_FAVICON, feed.getLink())).
+                placeholder(R.drawable.ic_menu_gallery).
+                error(R.drawable.ic_menu_gallery).
+                resizeDimen(R.dimen.menu_icon_size, R.dimen.menu_icon_size).
+                centerCrop().into(new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                item.setIcon(new BitmapDrawable(getRoot().getResources(), bitmap));
+            }
 
-                @Override
-                public void onBitmapFailed(Drawable errorDrawable) {
-                }
+            @Override
+            public void onBitmapFailed(Drawable drawable) {
+                item.setIcon(drawable);
+            }
 
-                @Override
-                public void onPrepareLoad(Drawable placeHolderDrawable) {
-                }
-            });
-        else
-            item.setIcon(R.drawable.ic_menu_gallery);
+            @Override
+            public void onPrepareLoad(Drawable drawable) {
+                item.setIcon(drawable);
+            }
+        });
         if (menuId == 1 && listener != null)
             listener.onNavigationItemSelected(item);
         item.setCheckable(true);

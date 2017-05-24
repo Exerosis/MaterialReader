@@ -3,8 +3,8 @@ package me.exerosis.materialreader.view.feed;
 
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -12,6 +12,8 @@ import butterknife.BindView;
 import me.exerosis.materialreader.R;
 import me.exerosis.materialreader.view.feed.holder.FeedEntryHolderView;
 import me.exerosis.mvc.butterknife.ButterKnifeFragmentView;
+
+import static android.support.v7.widget.StaggeredGridLayoutManager.*;
 
 public class FeedView extends ButterKnifeFragmentView implements Feed {
     @BindView(R.id.feed_view_entries)
@@ -22,7 +24,8 @@ public class FeedView extends ButterKnifeFragmentView implements Feed {
 
     public FeedView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
         super(inflater, container, R.layout.feed_view);
-        entries.setLayoutManager(new LinearLayoutManager(getRoot().getContext()));
+        entries.setLayoutManager(new StaggeredGridLayoutManager(2, VERTICAL));
+        entries.addItemDecoration(new ItemDecoration(16));
     }
 
     @Override
