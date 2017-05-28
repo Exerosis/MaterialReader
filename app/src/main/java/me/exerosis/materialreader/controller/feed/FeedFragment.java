@@ -57,8 +57,7 @@ public class FeedFragment extends Fragment implements FeedController {
 
     @Override
     public void onRefresh() {
-        if (url != null)
-            store.clear(url);
+        view.setRefreshing(false);
     }
 
     @Override

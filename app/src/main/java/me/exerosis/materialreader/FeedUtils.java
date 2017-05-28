@@ -17,7 +17,10 @@ import java.util.List;
 
 import rx.Observable;
 
+
 public class FeedUtils {
+    public static final String FORMAT_FAVICON = "https://www.google.com/s2/favicons?domain=%s";
+
     private FeedUtils() {
     }
 
@@ -83,5 +86,4 @@ public class FeedUtils {
             urls.add(element.attr("src"));
         return urls;
     }
-
 }

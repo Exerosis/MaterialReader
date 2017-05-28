@@ -21,9 +21,9 @@ import me.exerosis.materialreader.R;
 import me.exerosis.mvc.butterknife.ButterKnifeContainerView;
 
 import static java.lang.String.format;
+import static me.exerosis.materialreader.FeedUtils.FORMAT_FAVICON;
 
 public class FeedContainerView extends ButterKnifeContainerView implements FeedContainer {
-    private static final String FORMAT_FAVICON = "https://www.google.com/s2/favicons?domain=%s";
     @BindView(R.id.feed_container_view_navigation)
     NavigationView navigation;
     @BindView(R.id.feed_container_view_drawer)
@@ -63,6 +63,7 @@ public class FeedContainerView extends ButterKnifeContainerView implements FeedC
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                 item.setIcon(new BitmapDrawable(getRoot().getResources(), bitmap));
+                navigation.invalidate();
             }
 
             @Override

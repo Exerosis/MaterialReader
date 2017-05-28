@@ -8,24 +8,24 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.nytimes.android.external.store.base.impl.Store;
 import com.rometools.rome.feed.synd.SyndFeed;
 
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
+import me.exerosis.materialreader.MaterialReader;
 import me.exerosis.materialreader.R;
 import me.exerosis.materialreader.controller.add.AddStockDialog;
 import me.exerosis.materialreader.controller.feed.FeedFragment;
-import me.exerosis.materialreader.MaterialReader;
 import me.exerosis.materialreader.view.feed.container.FeedContainerView;
 import rx.android.schedulers.AndroidSchedulers;
 
 public class FeedContainerActivity extends AppCompatActivity implements FeedContainerController {
     public static final String TAG_DIALOG = "AddStockDialog";
-    private final BiMap<String, MenuItem> feeds = HashBiMap.create();
+    private final Map<MenuItem, String> feeds = new HashMap<>();
     private FeedContainerView view;
     private AddStockDialog dialog;
     private Store<SyndFeed, String> store;
@@ -55,17 +55,17 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
         if (preferences.getAll().size() < 1)
             preferences.edit().putString("https://www.wired.com/feed", UUID.randomUUID().toString()).commit();
         for (String url : preferences.getAll().keySet())
-            store.getRefreshing(url).observeOn(AndroidSchedulers.mainThread()).subscribe(feed -> feeds.put(url, view.addFeed(feed)), Throwable::printStackTrace);
+            store.getRefreshing(url).observeOn(AndroidSchedulers.mainThread()).subscribe(feed -> feeds.put(view.addFeed(feed), url), Throwable::printStackTrace);
         display((String) preferences.getAll().keySet().toArray()[0]);
 
         view.setListener(item -> {
-            if (!feeds.inverse().containsKey(item))
+            if (!feeds.containsKey(item))
                 if (item.getItemId() == R.id.feed_container_view_menu_add) {
                     dialog.show(getSupportFragmentManager(), TAG_DIALOG);
                     return true;
                 } else
                     return false;
-            display(feeds.inverse().get(item));
+            display(feeds.get(item));
             return true;
         });
 
@@ -74,15 +74,15 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
 
     @Override
     public void onAdd(String url) {
-        store.getRefreshing(url).observeOn(AndroidSchedulers.mainThread()).subscribe(feed -> {
-            if (preferences.contains(url))
-                dialog.showError(R.string.error_duplicate);
-            else {
+        if (preferences.contains(url))
+            dialog.showError(R.string.error_duplicate);
+        else
+            store.getRefreshing(url).observeOn(AndroidSchedulers.mainThread()).subscribe(feed -> {
                 dialog.dismissAllowingStateLoss();
-                feeds.put(url, view.addFeed(feed));
-            }
-        }, throwable -> dialog.showError(throwable instanceof IllegalArgumentException ? R.string.error_url :
-                throwable instanceof UnknownHostException ? R.string.error_network : R.string.error_feed));
+                feeds.put(view.addFeed(feed), url);
+                display(url);
+            }, throwable -> dialog.showError(throwable instanceof IllegalArgumentException ? R.string.error_url :
+                    throwable instanceof UnknownHostException ? R.string.error_network : R.string.error_feed));
     }
 
     @Override

@@ -21,6 +21,7 @@ import org.jsoup.examples.HtmlToPlainText;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.Random;
 
 import butterknife.BindView;
 import me.exerosis.materialreader.R;
@@ -42,13 +43,19 @@ public class FeedEntryHolderView extends ButterKnifeHolderView implements FeedEn
     TextView description;
     @BindView(R.id.feed_entry_toggle)
     ToggleButton toggle;
-    @BindView(R.id.feed_entry_expandable_ayout)
+    @BindView(R.id.feed_entry_expandable_layout)
     ExpandableLayout expandableLayout;
 
     public FeedEntryHolderView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container, @LayoutRes int layout) {
         super(inflater, container, layout);
-        if (layout == R.layout.feed_entry_holder_view)
+        if (new Random().nextBoolean())
             ((StaggeredGridLayoutManager.LayoutParams) getRoot().getLayoutParams()).setFullSpan(true);
+        else {
+            title.setMaxLines(3);
+            title.setMinLines(3);
+        }
+//        if (layout == R.layout.feed_entry_holder_view)
+//            ((StaggeredGridLayoutManager.LayoutParams) getRoot().getLayoutParams()).setFullSpan(true);
 
         toggle.setOnClickListener(view -> {
             toggle.setChecked(shown ^= true);
@@ -67,10 +74,18 @@ public class FeedEntryHolderView extends ButterKnifeHolderView implements FeedEn
         shown = false;
         expandableLayout.collapse(false);
         toggle.setChecked(false);
-        title.setText(pair.first.getTitle());
-        subtitle.setText(pair.first.getAuthor() + ", " + FORMAT_DATE.format(pair.first.getPublishedDate()));
+
+        SyndEntry entry = pair.first;
+
+        title.setText(entry.getTitle());
         thumbnail.setImageBitmap(pair.second);
-        description.setText(new HtmlToPlainText().getPlainText(Jsoup.parse(pair.first.getDescription().getValue())));
+        description.setText(new HtmlToPlainText().getPlainText(Jsoup.parse(entry.getDescription().getValue())));
+
+        StringBuilder builder = new StringBuilder();
+        if (entry.getAuthor() != null)
+            builder.append(entry.getAuthor()).append(", ");
+        builder.append(FORMAT_DATE.format(entry.getPublishedDate()));
+        subtitle.setText(builder);
     }
 
     @Override
