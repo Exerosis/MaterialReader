@@ -14,54 +14,34 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <RelativeLayout
+        <TextView
+            android:id="@+id/feed_entry_title"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginBottom="4dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:layout_toStartOf="@id/feed_entry_thumbnail"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:textColor="@color/primary_text"
+            android:textSize="18sp"
+            tools:text="Trump Broke Something Again At The Whitehouse Today" />
 
-            <ImageView
-                android:id="@+id/feed_entry_thumbnail"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentTop="true"
-                android:layout_gravity="center"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="16dp"
-                android:scaleType="centerCrop"
-                app:srcCompat="@drawable/feed_container_header_background" />
-
-            <TextView
-                android:id="@+id/feed_entry_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="24dp"
-                android:layout_toStartOf="@id/feed_entry_thumbnail"
-                android:ellipsize="end"
-                android:maxLines="3"
-                android:paddingBottom="6dp"
-                android:textColor="@color/primary_text"
-                android:textSize="18sp"
-                tools:text="Trump Broke Something Again At The Whitehouse Today" />
-
-            <TextView
-                android:id="@+id/feed_entry_subtitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_below="@id/feed_entry_title"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_toStartOf="@id/feed_entry_thumbnail"
-                android:paddingBottom="8dp"
-                android:textColor="@color/secondary_text"
-                tools:text="Lifehacker, March 13, 2017" />
-
-
-        </RelativeLayout>
+        <TextView
+            android:id="@+id/feed_entry_subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/feed_entry_title"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_toStartOf="@id/feed_entry_thumbnail"
+            android:textColor="@color/secondary_text"
+            tools:text="Lifehacker, March 13, 2017" />
 
         <net.cachapa.expandablelayout.ExpandableLayout
             android:id="@+id/feed_entry_expandable_layout"

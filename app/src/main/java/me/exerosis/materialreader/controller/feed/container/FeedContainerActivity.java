@@ -60,11 +60,17 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
 
         view.setListener(item -> {
             if (!feeds.containsKey(item))
-                if (item.getItemId() == R.id.feed_container_view_menu_add) {
-                    dialog.show(getSupportFragmentManager(), TAG_DIALOG);
-                    return true;
-                } else
-                    return false;
+                switch (item.getItemId()) {
+                    case R.id.feed_container_view_menu_add: {
+                        dialog.show(getSupportFragmentManager(), TAG_DIALOG);
+                        return false;
+                    }
+                    case R.id.feed_container_view_menu_home: {
+                        dis
+                    }
+                }
+            return true;
+
             display(feeds.get(item));
             return true;
         });
@@ -90,7 +96,7 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
         dialog.dismissAllowingStateLoss();
     }
 
-    private void display(String url) {
-        getSupportFragmentManager().beginTransaction().disallowAddToBackStack().replace(view.getContainerID(), FeedFragment.newInstance(url)).commit();
+    private void display(String... urls) {
+        getSupportFragmentManager().beginTransaction().disallowAddToBackStack().replace(view.getContainerID(), FeedFragment.newInstance(urls)).commit();
     }
 }

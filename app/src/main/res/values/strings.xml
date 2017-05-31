@@ -23,4 +23,5 @@
 
     <string name="up">Up</string>
     <string name="error_network">Device Offline</string>
+    <string name="menu_home_feed">Home Feed</string>
 </resources>

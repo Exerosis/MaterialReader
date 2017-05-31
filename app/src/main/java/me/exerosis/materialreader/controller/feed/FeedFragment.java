@@ -15,22 +15,22 @@ import com.rometools.rome.feed.synd.SyndFeed;
 
 import me.exerosis.materialreader.FeedUtils;
 import me.exerosis.materialreader.MaterialReader;
-import me.exerosis.materialreader.R;
 import me.exerosis.materialreader.view.feed.FeedView;
 import me.exerosis.materialreader.view.feed.holder.FeedEntryHolderView;
 import me.exerosis.mvc.rxjava.ObservableAdapter;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class FeedFragment extends Fragment implements FeedController {
     private static final String ARG_FEED = "FEED";
-    private String url;
+    private String[] urls;
     private Store<SyndFeed, String> store;
     private FeedView view;
 
-    public static FeedFragment newInstance(String url) {
+    public static FeedFragment newInstance(String... urls) {
         Bundle bundle = new Bundle();
-        bundle.putString(ARG_FEED, url);
+        bundle.putStringArray(ARG_FEED, urls);
         FeedFragment fragment = new FeedFragment();
         fragment.setArguments(bundle);
         return fragment;
@@ -38,7 +38,7 @@ public class FeedFragment extends Fragment implements FeedController {
 
     @Override
     public void onCreate(@Nullable Bundle in) {
-        url = getArguments().getString(ARG_FEED);
+        urls = getArguments().getStringArray(ARG_FEED);
         store = ((MaterialReader) getContext().getApplicationContext()).getStore();
         super.onCreate(in);
     }
@@ -48,10 +48,24 @@ public class FeedFragment extends Fragment implements FeedController {
         view = new FeedView(inflater, container);
         view.setListener(this);
 
-        view.setAdapter(new ObservableAdapter<>(store.get(url).map(SyndFeed::getEntries).flatMapIterable(l -> l).flatMap(entry -> FeedUtils.getImage(getContext(), entry), Pair::new).toList().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()), pair -> {
-            double ratio = Math.min(Math.round((((double) pair.second.getWidth()) / pair.second.getHeight()) * 2) / 2.0, 2);
-            return ratio < 0.5 ? 1 : ratio < 1.5 ? 2 : 3;
-        }, FeedEntryHolderView::setEntry, (parent, type) -> new FeedEntryHolderView(LayoutInflater.from(getContext()), parent, type == 1 ? R.layout.feed_entry_holder_view : type == 2 ? R.layout.feed_entry_holder_view : R.layout.feed_entry_holder_view).setListener(FeedFragment.this)));
+
+        view.setAdapter(new ObservableAdapter<>(Observable.from(urls).
+                concatMap(url -> store.get(url)).
+                map(SyndFeed::getEntries).
+                flatMapIterable(l -> l).
+                flatMap(entry -> FeedUtils.getImage(getContext(), entry), Pair::new).
+                toList().
+                subscribeOn(Schedulers.io()).
+                observeOn(AndroidSchedulers.mainThread()), pair -> {
+            if (pair.second == null)
+                return 0;
+            double pixels = pair.second.getWidth() * pair.second.getHeight();
+            if (pixels <= 40000)
+                return 1;
+            if (pixels <= 220000)
+                return 2;
+            return 3;
+        }, FeedEntryHolderView::setEntry, (parent, type) -> new FeedEntryHolderView(LayoutInflater.from(getContext()), parent, type).setListener(FeedFragment.this)));
         return view.getRoot();
     }
 

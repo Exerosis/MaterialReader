@@ -1,8 +1,8 @@
 package me.exerosis.materialreader.view.feed.holder;
 
 import android.graphics.Bitmap;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
@@ -32,6 +32,7 @@ public class FeedEntryHolderView extends ButterKnifeHolderView implements FeedEn
     private FeedEntryListener listener;
     private boolean shown = false;
 
+    @Nullable
     @BindView(R.id.feed_entry_thumbnail)
     ImageView thumbnail;
     @BindView(R.id.feed_entry_title)
@@ -45,19 +46,15 @@ public class FeedEntryHolderView extends ButterKnifeHolderView implements FeedEn
     @BindView(R.id.feed_entry_expandable_layout)
     ExpandableLayout expandableLayout;
 
-    public FeedEntryHolderView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container, @LayoutRes int layout) {
-        super(inflater, container, R.layout.feed_entry_holder_view_small);
-        ((StaggeredGridLayoutManager.LayoutParams) getRoot().getLayoutParams()).setFullSpan(true);
-        title.setMaxLines(2);
+    public FeedEntryHolderView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container, int type) {
+        super(inflater, container, type == 0 ? R.layout.feed_entry_holder_view_text : type == 1 ? R.layout.feed_entry_holder_view_small : R.layout.feed_entry_holder_view_large);
 
-//        if (new Random().nextBoolean())
-//
-//        else {
-//            title.setMaxLines(3);
-//            title.setMinLines(3);
-//        }
-//        if (layout == R.layout.feed_entry_holder_view)
-//            ((StaggeredGridLayoutManager.LayoutParams) getRoot().getLayoutParams()).setFullSpan(true);
+        if (type != 2)
+            ((StaggeredGridLayoutManager.LayoutParams) getRoot().getLayoutParams()).setFullSpan(true);
+        else {
+            title.setMaxLines(3);
+            title.setMinLines(3);
+        }
 
         toggle.setOnClickListener(view -> {
             toggle.setChecked(shown ^= true);
@@ -80,7 +77,8 @@ public class FeedEntryHolderView extends ButterKnifeHolderView implements FeedEn
         SyndEntry entry = pair.first;
 
         title.setText(entry.getTitle());
-        thumbnail.setImageBitmap(pair.second);
+        if (thumbnail != null)
+            thumbnail.setImageBitmap(pair.second);
         description.setText(new HtmlToPlainText().getPlainText(Jsoup.parse(entry.getDescription().getValue())).replace("\n", "").replace("\r", ""));
 
         StringBuilder builder = new StringBuilder();
