@@ -21,7 +21,6 @@ import org.jsoup.examples.HtmlToPlainText;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
-import java.util.Random;
 
 import butterknife.BindView;
 import me.exerosis.materialreader.R;
@@ -47,13 +46,16 @@ public class FeedEntryHolderView extends ButterKnifeHolderView implements FeedEn
     ExpandableLayout expandableLayout;
 
     public FeedEntryHolderView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container, @LayoutRes int layout) {
-        super(inflater, container, layout);
-        if (new Random().nextBoolean())
-            ((StaggeredGridLayoutManager.LayoutParams) getRoot().getLayoutParams()).setFullSpan(true);
-        else {
-            title.setMaxLines(3);
-            title.setMinLines(3);
-        }
+        super(inflater, container, R.layout.feed_entry_holder_view_small);
+        ((StaggeredGridLayoutManager.LayoutParams) getRoot().getLayoutParams()).setFullSpan(true);
+        title.setMaxLines(2);
+
+//        if (new Random().nextBoolean())
+//
+//        else {
+//            title.setMaxLines(3);
+//            title.setMinLines(3);
+//        }
 //        if (layout == R.layout.feed_entry_holder_view)
 //            ((StaggeredGridLayoutManager.LayoutParams) getRoot().getLayoutParams()).setFullSpan(true);
 

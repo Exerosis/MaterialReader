@@ -9,41 +9,40 @@
     android:layout_marginStart="8dp"
     android:layout_marginTop="4dp">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/feed_entry_thumbnail"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true"
-            android:layout_gravity="center"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="16dp"
-            android:scaleType="centerCrop"
-            app:srcCompat="@drawable/feed_container_header_background" />
-
-        <LinearLayout
-            android:id="@+id/feed_entry_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
-            android:layout_toStartOf="@id/feed_entry_thumbnail"
-            android:orientation="vertical">
+            <ImageView
+                android:id="@+id/feed_entry_thumbnail"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:layout_gravity="center"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
+                android:scaleType="centerCrop"
+                app:srcCompat="@drawable/feed_container_header_background" />
 
             <TextView
                 android:id="@+id/feed_entry_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:layout_weight="1"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_toStartOf="@id/feed_entry_thumbnail"
                 android:ellipsize="end"
+                android:maxLines="2"
+                android:paddingBottom="6dp"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:paddingTop="24dp"
                 android:textColor="@color/primary_text"
                 android:textSize="18sp"
                 tools:text="Trump Broke Something Again At The Whitehouse Today" />
@@ -52,18 +51,44 @@
                 android:id="@+id/feed_entry_subtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/feed_entry_title"
+                android:layout_toStartOf="@id/feed_entry_thumbnail"
+                android:paddingBottom="8dp"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
                 android:textColor="@color/secondary_text"
                 tools:text="Lifehacker, March 13, 2017" />
 
-        </LinearLayout>
+
+        </RelativeLayout>
+
+        <net.cachapa.expandablelayout.ExpandableLayout
+            android:id="@+id/feed_entry_expandable_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:paddingTop="0dp"
+            app:el_duration="500"
+            app:el_expanded="false"
+            app:el_parallax="1">
+
+            <TextView
+                android:id="@+id/feed_entry_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="50dp"
+                android:padding="16dp"
+                tools:text="blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah" />
+
+        </net.cachapa.expandablelayout.ExpandableLayout>
 
         <RelativeLayout
             android:id="@+id/feed_entry_actions"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_alignParentBottom="true"
-            android:layout_below="">
+            android:layout_height="48dp">
 
             <Button
                 android:id="@+id/feed_entry_share"
@@ -103,30 +128,6 @@
                 android:textOn="" />
         </RelativeLayout>
 
-        <net.cachapa.expandablelayout.ExpandableLayout
-            android:id="@+id/feed_entry_expandable_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@id/feed_entry_actions"
-            android:layout_below="@id/feed_entry_text"
-            android:paddingBottom="16dp"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp"
-            android:paddingTop="0dp"
-            app:el_duration="500"
-            app:el_expanded="false"
-            app:el_parallax="1">
-
-            <TextView
-                android:id="@+id/feed_entry_description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="50dp"
-                android:padding="16dp"
-                tools:text="blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah" />
-
-        </net.cachapa.expandablelayout.ExpandableLayout>
-
-    </RelativeLayout>
+    </LinearLayout>
 
 </android.support.v7.widget.CardView>
