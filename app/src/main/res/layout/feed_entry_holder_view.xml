@@ -67,6 +67,7 @@
                 android:id="@+id/feed_entry_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="16dp"
                 android:minHeight="50dp"
                 android:padding="16dp"
                 tools:text="blah blah blah blah blah blah blah blah blah blah blah blalhblah blah blah blah blah blah blah blah blah blah blah" />

@@ -81,10 +81,10 @@ public class FeedEntryHolderView extends ButterKnifeHolderView implements FeedEn
 
         title.setText(entry.getTitle());
         thumbnail.setImageBitmap(pair.second);
-        description.setText(new HtmlToPlainText().getPlainText(Jsoup.parse(entry.getDescription().getValue())));
+        description.setText(new HtmlToPlainText().getPlainText(Jsoup.parse(entry.getDescription().getValue())).replace("\n", "").replace("\r", ""));
 
         StringBuilder builder = new StringBuilder();
-        if (entry.getAuthor() != null)
+        if (entry.getAuthor() != null && !entry.getAuthor().isEmpty())
             builder.append(entry.getAuthor()).append(", ");
         builder.append(FORMAT_DATE.format(entry.getPublishedDate()));
         subtitle.setText(builder);
