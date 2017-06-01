@@ -50,7 +50,7 @@ public class FeedFragment extends Fragment implements FeedController {
 
 
         view.setAdapter(new ObservableAdapter<>(Observable.from(urls).
-                concatMap(url -> store.get(url)).
+                flatMap(url -> store.get(url)).
                 map(SyndFeed::getEntries).
                 flatMapIterable(l -> l).
                 flatMap(entry -> FeedUtils.getImage(getContext(), entry), Pair::new).

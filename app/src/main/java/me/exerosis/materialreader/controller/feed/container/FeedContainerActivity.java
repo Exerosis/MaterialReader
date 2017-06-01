@@ -14,6 +14,7 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import me.exerosis.materialreader.MaterialReader;
@@ -63,14 +64,15 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
                 switch (item.getItemId()) {
                     case R.id.feed_container_view_menu_add: {
                         dialog.show(getSupportFragmentManager(), TAG_DIALOG);
-                        return false;
+                        return true;
                     }
                     case R.id.feed_container_view_menu_home: {
-                        dis
+                        Set<String> urls = preferences.getAll().keySet();
+                        String s = urls.toArray(new String[urls.size()])[0];
+                        display(s);
+                        return true;
                     }
                 }
-            return true;
-
             display(feeds.get(item));
             return true;
         });
