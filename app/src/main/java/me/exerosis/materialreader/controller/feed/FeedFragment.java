@@ -54,7 +54,7 @@ public class FeedFragment extends Fragment implements FeedController {
                 map(SyndFeed::getEntries).
                 flatMapIterable(l -> l).
                 flatMap(entry -> FeedUtils.getImage(getContext(), entry), Pair::new).
-                toList().
+                toSortedList((one, two) -> one.first.getPublishedDate().compareTo(one.first.getPublishedDate())).
                 subscribeOn(Schedulers.io()).
                 observeOn(AndroidSchedulers.mainThread()), pair -> {
             if (pair.second == null)

@@ -68,7 +68,7 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
                     }
                     case R.id.feed_container_view_menu_home: {
                         Set<String> urls = preferences.getAll().keySet();
-                        String s = urls.toArray(new String[urls.size()])[0];
+                        String[] s = urls.toArray(new String[urls.size()]);
                         display(s);
                         return true;
                     }
@@ -85,7 +85,7 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
         if (preferences.contains(url))
             dialog.showError(R.string.error_duplicate);
         else
-            store.getRefreshing(url).observeOn(AndroidSchedulers.mainThread()).subscribe(feed -> {
+            store.get(url).observeOn(AndroidSchedulers.mainThread()).subscribe(feed -> {
                 dialog.dismissAllowingStateLoss();
                 feeds.put(view.addFeed(feed), url);
                 display(url);
