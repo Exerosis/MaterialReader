@@ -52,6 +52,7 @@ public class FeedContainerView extends ButterKnifeContainerView implements FeedC
         });
         behavior = new FloatingActionButtonBehavior(fab);
         ((CoordinatorLayout.LayoutParams) fab.getLayoutParams()).setBehavior(behavior);
+        fab.invalidate();
     }
 
     @Override
