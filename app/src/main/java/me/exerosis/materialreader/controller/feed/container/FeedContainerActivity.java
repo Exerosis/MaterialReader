@@ -3,6 +3,7 @@ package me.exerosis.materialreader.controller.feed.container;
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -40,6 +41,10 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
         store = ((MaterialReader) getApplicationContext()).getStore();
         preferences = ((MaterialReader) getApplicationContext()).getSharedPreferences();
 
+        //--Setup View--
+        view.setListener(this);
+        setContentView(view.getRoot());
+
         //--Dialog--
         dialog = new AddStockDialog();
         dialog.setListener(this);
@@ -55,29 +60,25 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
         //--Feeds--
         if (preferences.getAll().size() < 1)
             preferences.edit().putString("https://www.wired.com/feed", UUID.randomUUID().toString()).commit();
+
         for (String url : preferences.getAll().keySet())
-            store.getRefreshing(url).observeOn(AndroidSchedulers.mainThread()).subscribe(feed -> feeds.put(view.addFeed(feed), url), Throwable::printStackTrace);
-        display((String) preferences.getAll().keySet().toArray()[0]);
+            store.getRefreshing(url).observeOn(AndroidSchedulers.mainThread()).subscribe(feed -> feeds.put(view.addFeed(feed), url));
+    }
 
-        view.setListener(item -> {
-            if (!feeds.containsKey(item))
-                switch (item.getItemId()) {
-                    case R.id.feed_container_view_menu_add: {
-                        dialog.show(getSupportFragmentManager(), TAG_DIALOG);
-                        return true;
-                    }
-                    case R.id.feed_container_view_menu_home: {
-                        Set<String> urls = preferences.getAll().keySet();
-                        String[] s = urls.toArray(new String[urls.size()]);
-                        display(s);
-                        return true;
-                    }
-                }
+    @Override
+    public void onAddClick() {
+        dialog.show(getSupportFragmentManager(), TAG_DIALOG);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        if (view.setHome(!feeds.containsKey(item))) {
+            Set<String> urls = preferences.getAll().keySet();
+            String[] s = urls.toArray(new String[urls.size()]);
+            display(s);
+        } else
             display(feeds.get(item));
-            return true;
-        });
-
-        setContentView(view.getRoot());
+        return true;
     }
 
     @Override

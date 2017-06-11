@@ -8,14 +8,13 @@
             android:title="@string/menu_add_feed" />
     </group>
 
-    <group>
-        <item
-            android:id="@+id/feed_container_view_menu_home"
-            android:icon="@drawable/ic_favorite"
-            android:title="@string/menu_add_feed" />
-    </group>
-
     <group
         android:id="@+id/feed_container_view_menu"
-        android:checkableBehavior="single" />
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/feed_container_view_menu_home"
+            android:icon="@drawable/ic_home"
+            android:title="@string/menu_home_feed" />
+    </group>
+
 </menu>

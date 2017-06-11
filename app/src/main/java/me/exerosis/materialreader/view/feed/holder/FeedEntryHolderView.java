@@ -16,7 +16,6 @@ import com.rometools.rome.feed.synd.SyndEntry;
 import net.cachapa.expandablelayout.ExpandableLayout;
 
 import org.jsoup.Jsoup;
-import org.jsoup.examples.HtmlToPlainText;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -79,7 +78,7 @@ public class FeedEntryHolderView extends ButterKnifeHolderView implements FeedEn
         title.setText(entry.getTitle());
         if (thumbnail != null)
             thumbnail.setImageBitmap(pair.second);
-        description.setText(new HtmlToPlainText().getPlainText(Jsoup.parse(entry.getDescription().getValue())).replace("\n", "").replace("\r", ""));
+        description.setText(Jsoup.parse(entry.getDescription().getValue()).text().replace("\n", "").replace("\r", ""));
 
         StringBuilder builder = new StringBuilder();
         if (entry.getAuthor() != null && !entry.getAuthor().isEmpty())

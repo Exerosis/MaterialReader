@@ -53,7 +53,7 @@ public class ObservableAdapter<ViewHolder extends RecyclerView.ViewHolder, Data>
         dataObservable.subscribe(data -> {
             this.data = data;
             notifyDataSetChanged();
-        });
+        }, Throwable::printStackTrace);
     }
 
 

@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -18,20 +20,25 @@ import com.squareup.picasso.Target;
 
 import butterknife.BindView;
 import me.exerosis.materialreader.R;
+import me.exerosis.materialreader.controller.feed.container.FloatingActionButtonBehavior;
 import me.exerosis.mvc.butterknife.ButterKnifeContainerView;
 
 import static java.lang.String.format;
 import static me.exerosis.materialreader.FeedUtils.FORMAT_FAVICON;
 
 public class FeedContainerView extends ButterKnifeContainerView implements FeedContainer {
+    private final FloatingActionButtonBehavior behavior;
     @BindView(R.id.feed_container_view_navigation)
     NavigationView navigation;
     @BindView(R.id.feed_container_view_drawer)
     DrawerLayout drawer;
     @BindView(R.id.feed_container_view_toolbar)
     Toolbar toolbar;
+    @BindView(R.id.feed_container_fab)
+    FloatingActionButton fab;
+
     private int menuId = 0;
-    private NavigationView.OnNavigationItemSelectedListener listener;
+    private FeedContainerListener listener;
 
     public FeedContainerView(@NonNull LayoutInflater inflater) {
         super(inflater, R.layout.feed_container_view, R.id.feed_container_view);
@@ -39,6 +46,12 @@ public class FeedContainerView extends ButterKnifeContainerView implements FeedC
             drawer.closeDrawer(GravityCompat.START);
             return listener.onNavigationItemSelected(item);
         });
+        fab.setOnClickListener(view -> {
+            if (listener != null)
+                listener.onAddClick();
+        });
+        behavior = new FloatingActionButtonBehavior(fab);
+        ((CoordinatorLayout.LayoutParams) fab.getLayoutParams()).setBehavior(behavior);
     }
 
     @Override
@@ -88,12 +101,18 @@ public class FeedContainerView extends ButterKnifeContainerView implements FeedC
     }
 
     @Override
-    public NavigationView.OnNavigationItemSelectedListener getListener() {
+    public boolean setHome(boolean home) {
+        behavior.setHome(home);
+        return home;
+    }
+
+    @Override
+    public FeedContainerListener getListener() {
         return listener;
     }
 
     @Override
-    public FeedContainerView setListener(NavigationView.OnNavigationItemSelectedListener listener) {
+    public FeedContainerView setListener(FeedContainerListener listener) {
         this.listener = listener;
         return this;
     }
