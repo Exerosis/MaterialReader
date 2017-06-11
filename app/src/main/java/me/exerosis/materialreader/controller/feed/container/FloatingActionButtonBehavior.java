@@ -2,10 +2,8 @@ package me.exerosis.materialreader.controller.feed.container;
 
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
-
-import static android.view.View.INVISIBLE;
-import static android.view.View.VISIBLE;
 
 public class FloatingActionButtonBehavior extends FloatingActionButton.Behavior {
     private boolean home = false;
@@ -34,11 +32,20 @@ public class FloatingActionButtonBehavior extends FloatingActionButton.Behavior 
     }
 
     @Override
+    public boolean layoutDependsOn(CoordinatorLayout parent, FloatingActionButton child, View dependency) {
+        return dependency instanceof RecyclerView;
+    }
+
+    @Override
+    public boolean onStartNestedScroll(CoordinatorLayout layout, FloatingActionButton child, View directTargetChild, View target, int axes) {
+        return true;
+    }
+
+    @Override
     public void onNestedScroll(CoordinatorLayout layout, FloatingActionButton child, View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
-        super.onNestedScroll(layout, child, target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
-        if (home && dyConsumed < 0 && child.getVisibility() != VISIBLE)
+        if (dyConsumed <= 0 && home)
             child.show();
-        else if (child.getVisibility() != INVISIBLE)
+        else
             child.hide();
     }
 }
