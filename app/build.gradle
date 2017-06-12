@@ -48,6 +48,7 @@ dependencies {
     compile 'com.google.guava:guava:20.0'
     compile 'org.jsoup:jsoup:1.10.2'
     compile 'net.cachapa.expandablelayout:expandablelayout:2.9.1'
+    compile 'com.thefinestartist:finestwebview:1.2.7'
 
     //--Test Libraries--
     testCompile 'junit:junit:4.12'

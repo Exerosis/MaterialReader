@@ -38,21 +38,23 @@ public class FeedContainerView extends ButterKnifeContainerView implements FeedC
     FloatingActionButton fab;
 
     private int menuId = 0;
-    private FeedContainerListener listener;
 
     public FeedContainerView(@NonNull LayoutInflater inflater) {
         super(inflater, R.layout.feed_container_view, R.id.feed_container_view);
-        navigation.setNavigationItemSelectedListener(item -> {
-            drawer.closeDrawer(GravityCompat.START);
-            return listener.onNavigationItemSelected(item);
-        });
-        fab.setOnClickListener(view -> {
-            if (listener != null)
-                listener.onAddClick();
-        });
+
         behavior = new FloatingActionButtonBehavior(fab);
         ((CoordinatorLayout.LayoutParams) fab.getLayoutParams()).setBehavior(behavior);
         fab.invalidate();
+
+        navigation.setNavigationItemSelectedListener(item -> {
+            drawer.closeDrawer(GravityCompat.START);
+            return getListener().onNavigationItemSelected(item);
+        });
+    }
+
+    @Override
+    public MenuItem getHomeItem() {
+        return navigation.getMenu().findItem(R.id.feed_container_view_menu_home);
     }
 
     @Override
@@ -90,8 +92,6 @@ public class FeedContainerView extends ButterKnifeContainerView implements FeedC
                 item.setIcon(drawable);
             }
         });
-        if (menuId == 1 && listener != null)
-            listener.onNavigationItemSelected(item);
         item.setCheckable(true);
         return item;
     }
@@ -109,12 +109,12 @@ public class FeedContainerView extends ButterKnifeContainerView implements FeedC
 
     @Override
     public FeedContainerListener getListener() {
-        return listener;
+        return behavior.getListener();
     }
 
     @Override
     public FeedContainerView setListener(FeedContainerListener listener) {
-        this.listener = listener;
+        behavior.setListener(listener);
         return this;
     }
 }

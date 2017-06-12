@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
@@ -23,7 +24,9 @@ import me.exerosis.materialreader.R;
 import me.exerosis.materialreader.controller.add.AddStockDialog;
 import me.exerosis.materialreader.controller.feed.FeedFragment;
 import me.exerosis.materialreader.view.feed.container.FeedContainerView;
-import rx.android.schedulers.AndroidSchedulers;
+
+import static rx.Observable.from;
+import static rx.android.schedulers.AndroidSchedulers.mainThread;
 
 public class FeedContainerActivity extends AppCompatActivity implements FeedContainerController {
     public static final String TAG_DIALOG = "AddStockDialog";
@@ -61,8 +64,8 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
         if (preferences.getAll().size() < 1)
             preferences.edit().putString("https://www.wired.com/feed", UUID.randomUUID().toString()).commit();
 
-        for (String url : preferences.getAll().keySet())
-            store.getRefreshing(url).observeOn(AndroidSchedulers.mainThread()).subscribe(feed -> feeds.put(view.addFeed(feed), url));
+        from(preferences.getAll().keySet()).flatMap(url -> store.get(url).map(entry -> Pair.create(entry, url))).observeOn(mainThread()).
+                subscribe(pair -> feeds.put(view.addFeed(pair.first), pair.second), Throwable::printStackTrace, () -> onNavigationItemSelected(view.getHomeItem().setChecked(true)));
     }
 
     @Override
@@ -86,7 +89,7 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
         if (preferences.contains(url))
             dialog.showError(R.string.error_duplicate);
         else
-            store.get(url).observeOn(AndroidSchedulers.mainThread()).subscribe(feed -> {
+            store.get(url).observeOn(mainThread()).subscribe(feed -> {
                 dialog.dismissAllowingStateLoss();
                 feeds.put(view.addFeed(feed), url);
                 display(url);

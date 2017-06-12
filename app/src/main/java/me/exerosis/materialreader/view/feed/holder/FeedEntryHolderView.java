@@ -60,7 +60,7 @@ public class FeedEntryHolderView extends ButterKnifeHolderView implements FeedEn
             expandableLayout.setExpanded(shown, true);
         });
 
-        getRoot().setOnClickListener(v -> {
+        itemView.setOnClickListener(v -> {
             if (listener != null)
                 listener.onClick(pair);
         });

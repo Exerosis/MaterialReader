@@ -1,8 +1,10 @@
 package me.exerosis.materialreader.controller.feed;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
 import android.view.LayoutInflater;
@@ -12,15 +14,20 @@ import android.view.ViewGroup;
 import com.nytimes.android.external.store.base.impl.Store;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
+import com.thefinestartist.finestwebview.FinestWebView;
 
 import me.exerosis.materialreader.FeedUtils;
 import me.exerosis.materialreader.MaterialReader;
+import me.exerosis.materialreader.R;
 import me.exerosis.materialreader.view.feed.FeedView;
 import me.exerosis.materialreader.view.feed.holder.FeedEntryHolderView;
 import me.exerosis.mvc.rxjava.ObservableAdapter;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+
+import static android.util.TypedValue.COMPLEX_UNIT_DIP;
+import static android.util.TypedValue.applyDimension;
 
 public class FeedFragment extends Fragment implements FeedController {
     private static final String ARG_FEED = "FEED";
@@ -76,6 +83,23 @@ public class FeedFragment extends Fragment implements FeedController {
 
     @Override
     public void onClick(Pair<SyndEntry, Bitmap> entry) {
-        //TODO new Activity.
+        new FinestWebView.Builder(getActivity()).
+                titleDefault(entry.first.getTitle()).
+                toolbarScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS).
+                toolbarColorRes(R.color.primary).
+                dividerColorRes(R.color.divider).
+                stringResShareVia(R.string.menu_share_via).
+                stringResOpenWith(R.string.menu_open_with).
+                webViewJavaScriptEnabled(true).
+                webViewBlockNetworkLoads(false).
+                statusBarColorRes(R.color.primary_dark).
+                showSwipeRefreshLayout(false).
+                titleColor(Color.WHITE).
+                iconDefaultColor(Color.WHITE).
+                progressBarHeight(applyDimension(COMPLEX_UNIT_DIP, 3, getResources().getDisplayMetrics())).
+                progressBarColorRes(R.color.accent).
+                backPressToClose(true).
+                setCustomAnimations(R.anim.activity_open_enter, R.anim.activity_open_exit, R.anim.activity_close_enter, R.anim.activity_close_exit).
+                show(entry.first.getLink());
     }
 }

@@ -10,6 +10,8 @@ import me.exerosis.mvc.Container;
 import me.exerosis.mvc.Listenable;
 
 public interface FeedContainer extends Container, Listenable<FeedContainerListener> {
+    MenuItem getHomeItem();
+
     Toolbar getToolbar();
 
     DrawerLayout getDrawer();

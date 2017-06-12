@@ -24,4 +24,6 @@
     <string name="up">Up</string>
     <string name="error_network">Device Offline</string>
     <string name="menu_home_feed">Home Feed</string>
+    <string name="menu_share_via">Share Via</string>
+    <string name="menu_open_with">Open With</string>
 </resources>
