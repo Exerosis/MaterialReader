@@ -62,7 +62,7 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
 
         //--Feeds--
         if (preferences.getAll().size() < 1)
-            preferences.edit().putString("https://www.wired.com/feed", UUID.randomUUID().toString()).commit();
+            preferences.edit().putString("https://www.livescience.com/home/feed/site.xml", UUID.randomUUID().toString()).commit();
 
         from(preferences.getAll().keySet()).flatMap(url -> store.get(url).map(entry -> Pair.create(entry, url))).observeOn(mainThread()).
                 subscribe(pair -> feeds.put(view.addFeed(pair.first), pair.second), Throwable::printStackTrace, () -> onNavigationItemSelected(view.getHomeItem().setChecked(true)));
