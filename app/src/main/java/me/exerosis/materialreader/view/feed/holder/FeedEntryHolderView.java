@@ -28,7 +28,6 @@ import me.exerosis.mvc.butterknife.ButterKnifeHolderView;
 public class FeedEntryHolderView extends ButterKnifeHolderView implements FeedEntryHolder {
     public static Format FORMAT_DATE = new SimpleDateFormat("MMM dd, yyyy", Locale.US);
     private Pair<SyndEntry, Bitmap> pair;
-    private FeedEntryListener listener;
     private boolean shown = false;
 
     @Nullable
@@ -59,11 +58,6 @@ public class FeedEntryHolderView extends ButterKnifeHolderView implements FeedEn
             toggle.setChecked(shown ^= true);
             expandableLayout.setExpanded(shown, true);
         });
-
-        itemView.setOnClickListener(v -> {
-            if (listener != null)
-                listener.onClick(pair);
-        });
     }
 
     @Override
@@ -85,16 +79,5 @@ public class FeedEntryHolderView extends ButterKnifeHolderView implements FeedEn
             builder.append(entry.getAuthor()).append(", ");
         builder.append(FORMAT_DATE.format(entry.getPublishedDate()));
         subtitle.setText(builder);
-    }
-
-    @Override
-    public FeedEntryListener getListener() {
-        return listener;
-    }
-
-    @Override
-    public FeedEntryHolderView setListener(FeedEntryListener listener) {
-        this.listener = listener;
-        return this;
     }
 }

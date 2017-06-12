@@ -1,6 +1,5 @@
 package me.exerosis.materialreader.controller.feed;
 
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.nytimes.android.external.store.base.impl.Store;
-import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.thefinestartist.finestwebview.FinestWebView;
 
@@ -72,34 +70,31 @@ public class FeedFragment extends Fragment implements FeedController {
             if (pixels <= 220000)
                 return 2;
             return 3;
-        }, FeedEntryHolderView::setEntry, (parent, type) -> new FeedEntryHolderView(LayoutInflater.from(getContext()), parent, type).setListener(FeedFragment.this)));
+        }, FeedEntryHolderView::setEntry, (parent, type) -> new FeedEntryHolderView(LayoutInflater.from(getContext()), parent, type), (entry, holder) -> {
+            new FinestWebView.Builder(getActivity()).
+                    titleDefault(entry.first.getTitle()).
+                    toolbarScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS).
+                    toolbarColorRes(R.color.primary).
+                    dividerColorRes(R.color.divider).
+                    stringResShareVia(R.string.menu_share_via).
+                    stringResOpenWith(R.string.menu_open_with).
+                    webViewJavaScriptEnabled(true).
+                    webViewBlockNetworkLoads(false).
+                    statusBarColorRes(R.color.primary_dark).
+                    showSwipeRefreshLayout(false).
+                    titleColor(Color.WHITE).
+                    iconDefaultColor(Color.WHITE).
+                    progressBarHeight(applyDimension(COMPLEX_UNIT_DIP, 3, getResources().getDisplayMetrics())).
+                    progressBarColorRes(R.color.accent).
+                    backPressToClose(true).
+                    setCustomAnimations(R.anim.activity_open_enter, R.anim.activity_open_exit, R.anim.activity_close_enter, R.anim.activity_close_exit).
+                    show(entry.first.getLink());
+        }));
         return view.getRoot();
     }
 
     @Override
     public void onRefresh() {
         view.setRefreshing(false);
-    }
-
-    @Override
-    public void onClick(Pair<SyndEntry, Bitmap> entry) {
-        new FinestWebView.Builder(getActivity()).
-                titleDefault(entry.first.getTitle()).
-                toolbarScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS).
-                toolbarColorRes(R.color.primary).
-                dividerColorRes(R.color.divider).
-                stringResShareVia(R.string.menu_share_via).
-                stringResOpenWith(R.string.menu_open_with).
-                webViewJavaScriptEnabled(true).
-                webViewBlockNetworkLoads(false).
-                statusBarColorRes(R.color.primary_dark).
-                showSwipeRefreshLayout(false).
-                titleColor(Color.WHITE).
-                iconDefaultColor(Color.WHITE).
-                progressBarHeight(applyDimension(COMPLEX_UNIT_DIP, 3, getResources().getDisplayMetrics())).
-                progressBarColorRes(R.color.accent).
-                backPressToClose(true).
-                setCustomAnimations(R.anim.activity_open_enter, R.anim.activity_open_exit, R.anim.activity_close_enter, R.anim.activity_close_exit).
-                show(entry.first.getLink());
     }
 }

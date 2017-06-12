@@ -19,7 +19,7 @@ public class FloatingActionButtonBehavior extends FloatingActionButton.Behavior 
     public FloatingActionButtonBehavior(FloatingActionButton child) {
         this.child = child;
         child.setOnClickListener(view -> {
-            if (listener != null && home)
+            if (listener != null && home && child.getVisibility() == VISIBLE)
                 listener.onAddClick();
         });
     }
