@@ -15,11 +15,12 @@ public class FloatingActionButtonBehavior extends FloatingActionButton.Behavior 
     private boolean home = false;
     private final FloatingActionButton child;
     private FeedContainerListener listener;
+    private boolean shown = false;
 
     public FloatingActionButtonBehavior(FloatingActionButton child) {
         this.child = child;
         child.setOnClickListener(view -> {
-            if (listener != null && home && child.getVisibility() == VISIBLE)
+            if (listener != null && shown)
                 listener.onAddClick();
         });
     }
@@ -64,10 +65,12 @@ public class FloatingActionButtonBehavior extends FloatingActionButton.Behavior 
 
     private void show() {
         child.animate().scaleX(1).scaleY(1).setDuration(100);
+        shown = true;
     }
 
     private void hide() {
         child.animate().scaleX(0).scaleY(0).setDuration(100);
+        shown = false;
     }
 
     @Override

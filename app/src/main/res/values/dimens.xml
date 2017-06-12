@@ -9,5 +9,6 @@
     <dimen name="fab_margin">24dp</dimen>
     <dimen name="menu_icon_size">24dp</dimen>
     <dimen name="icon_size">48dp</dimen>
+    <dimen name="item_offset">4dp</dimen>
 
 </resources>

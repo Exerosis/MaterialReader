@@ -7,6 +7,8 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/feed_view_entries"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:clipToPadding="true"
+        android:padding="@dimen/item_offset" />
 
 </android.support.v4.widget.SwipeRefreshLayout>

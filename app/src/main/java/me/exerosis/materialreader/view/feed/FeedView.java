@@ -13,7 +13,7 @@ import me.exerosis.materialreader.R;
 import me.exerosis.materialreader.view.feed.holder.FeedEntryHolderView;
 import me.exerosis.mvc.butterknife.ButterKnifeFragmentView;
 
-import static android.support.v7.widget.StaggeredGridLayoutManager.*;
+import static android.support.v7.widget.StaggeredGridLayoutManager.VERTICAL;
 
 public class FeedView extends ButterKnifeFragmentView implements Feed {
     @BindView(R.id.feed_view_entries)
@@ -25,7 +25,7 @@ public class FeedView extends ButterKnifeFragmentView implements Feed {
     public FeedView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
         super(inflater, container, R.layout.feed_view);
         entries.setLayoutManager(new StaggeredGridLayoutManager(2, VERTICAL));
-        entries.addItemDecoration(new ItemDecoration(16));
+        entries.addItemDecoration(new ItemOffsetDecoration(getRoot().getContext(), R.dimen.item_offset));
     }
 
     @Override

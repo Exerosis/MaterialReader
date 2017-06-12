@@ -47,7 +47,7 @@ public class FeedEntryHolderView extends ButterKnifeHolderView implements FeedEn
     public FeedEntryHolderView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container, int type) {
         super(inflater, container, type == 0 ? R.layout.feed_entry_holder_view_text : type == 1 ? R.layout.feed_entry_holder_view_small : R.layout.feed_entry_holder_view_large);
 
-        if (type != 2)
+        if (type != 2 && type != 0)
             ((StaggeredGridLayoutManager.LayoutParams) getRoot().getLayoutParams()).setFullSpan(true);
         else {
             title.setMaxLines(3);
