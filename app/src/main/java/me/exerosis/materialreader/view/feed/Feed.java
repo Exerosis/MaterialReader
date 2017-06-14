@@ -8,5 +8,7 @@ import me.exerosis.mvc.Listenable;
 import me.exerosis.mvc.ViewBase;
 
 public interface Feed extends ViewBase, Adaptable<RecyclerView.Adapter<FeedEntryHolderView>>, Listenable<FeedListener> {
+    void setLoading(boolean loading);
+
     void setRefreshing(boolean refreshing);
 }

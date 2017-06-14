@@ -61,10 +61,12 @@ public class FeedFragment extends Fragment implements FeedController {
                 flatMap(entry -> FeedUtils.getImage(getContext(), entry), Pair::new).
                 toSortedList((one, two) -> one.first.getPublishedDate().compareTo(one.first.getPublishedDate())).
                 subscribeOn(Schedulers.io()).
-                observeOn(AndroidSchedulers.mainThread()), pair -> {
+                observeOn(AndroidSchedulers.mainThread()).doOnCompleted(() -> view.setLoading(false)), pair -> {
             if (pair.second == null)
                 return 0;
             double pixels = pair.second.getWidth() * pair.second.getHeight();
+            if (pixels <= 15000)
+                return 0;
             if (pixels <= 40000)
                 return 1;
             if (pixels <= 220000)
