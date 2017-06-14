@@ -30,6 +30,7 @@ public class FeedView extends ButterKnifeFragmentView implements Feed {
 
     public FeedView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container) {
         super(inflater, container, R.layout.feed_view);
+        //Prepare a staggered layout with evenly spaced items.
         entries.setLayoutManager(new StaggeredGridLayoutManager(2, VERTICAL));
         entries.addItemDecoration(new ItemOffsetDecoration(getRoot().getContext(), R.dimen.item_offset));
     }

@@ -41,6 +41,8 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
     protected void onCreate(@Nullable Bundle in) {
         super.onCreate(in);
         view = new FeedContainerView(getLayoutInflater());
+
+        //Get preferences and sore instance from the application.
         store = ((MaterialReader) getApplicationContext()).getStore();
         preferences = ((MaterialReader) getApplicationContext()).getSharedPreferences();
 
@@ -56,25 +58,32 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
         setSupportActionBar(view.getToolbar());
 
         //--Toggle--
+        //Setup the hamburger button for nav drawer.
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, view.getDrawer(), view.getToolbar(), R.string.drawer_open, R.string.drawer_close);
         view.getDrawer().addDrawerListener(toggle);
         toggle.syncState();
 
         //--Feeds--
+        //If there are no feeds present, add livescience as a default feed.
         if (preferences.getAll().size() < 1)
             preferences.edit().putString("https://www.livescience.com/home/feed/site.xml", UUID.randomUUID().toString()).commit();
 
+        //ReactiveX flow
+        //Flow of feed urls, flat mapped to a flow of SyndEntries paired with urls from the store.
+        //At the end of the flow store the url and feed, when flow ends select the home feed.
         from(preferences.getAll().keySet()).flatMap(url -> store.get(url).map(entry -> Pair.create(entry, url))).observeOn(mainThread()).
                 subscribe(pair -> feeds.put(view.addFeed(pair.first), pair.second), Throwable::printStackTrace, () -> onNavigationItemSelected(view.getHomeItem().setChecked(true)));
     }
 
     @Override
     public void onAddClick() {
+        //Show the add feed dialog when the FAB is clicked.
         dialog.show(getSupportFragmentManager(), TAG_DIALOG);
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        //If the map of feeds doesn't contain the given ID then it's the home feed, so display all the feeds and enable showing the FAB.
         if (view.setHome(!feeds.containsKey(item))) {
             Set<String> urls = preferences.getAll().keySet();
             String[] s = urls.toArray(new String[urls.size()]);
@@ -86,9 +95,11 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
 
     @Override
     public void onAdd(String url) {
+        //If we already have this feed don't show it.
         if (preferences.contains(url))
             dialog.showError(R.string.error_duplicate);
         else
+            //Get the new feed from the store and map it, then display it. Show errors in dialog.
             store.get(url).observeOn(mainThread()).subscribe(feed -> {
                 dialog.dismissAllowingStateLoss();
                 feeds.put(view.addFeed(feed), url);

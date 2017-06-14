@@ -43,6 +43,7 @@ public class FeedFragment extends Fragment implements FeedController {
 
     @Override
     public void onCreate(@Nullable Bundle in) {
+        //Get urls from arguments and get the store from the application.
         urls = getArguments().getStringArray(ARG_FEED);
         store = ((MaterialReader) getContext().getApplicationContext()).getStore();
         super.onCreate(in);
@@ -53,7 +54,9 @@ public class FeedFragment extends Fragment implements FeedController {
         view = new FeedView(inflater, container);
         view.setListener(this);
 
-
+        //ReactiveX flow into an ObservableAdapter.
+        //From urls flatmaps to SyndFeeds, maps to lists of SyndEntries, flattens to a flow of SyndEntries
+        //Pairs them with their thumbnail images, sortes them by date. When the flow completes it hides the ProgressBar.
         view.setAdapter(new ObservableAdapter<>(Observable.from(urls).
                 flatMap(url -> store.get(url)).
                 map(SyndFeed::getEntries).
@@ -62,6 +65,7 @@ public class FeedFragment extends Fragment implements FeedController {
                 toSortedList((one, two) -> one.first.getPublishedDate().compareTo(one.first.getPublishedDate())).
                 subscribeOn(Schedulers.io()).
                 observeOn(AndroidSchedulers.mainThread()).doOnCompleted(() -> view.setLoading(false)), pair -> {
+            //Finds the correct view. Based on the thumbnail.
             if (pair.second == null)
                 return 0;
             double pixels = pair.second.getWidth() * pair.second.getHeight();
@@ -73,6 +77,7 @@ public class FeedFragment extends Fragment implements FeedController {
                 return 2;
             return 3;
         }, FeedEntryHolderView::setEntry, (parent, type) -> new FeedEntryHolderView(LayoutInflater.from(getContext()), parent, type), (entry, holder) -> {
+            //When an entry is clicked show a webview for it.
             new FinestWebView.Builder(getActivity()).
                     titleDefault(entry.first.getTitle()).
                     toolbarScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS).

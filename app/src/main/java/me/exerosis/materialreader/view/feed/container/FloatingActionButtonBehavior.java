@@ -1,11 +1,10 @@
-package me.exerosis.materialreader.controller.feed.container;
+package me.exerosis.materialreader.view.feed.container;
 
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import me.exerosis.materialreader.view.feed.container.FeedContainerListener;
 import me.exerosis.mvc.Listenable;
 
 import static android.view.View.INVISIBLE;

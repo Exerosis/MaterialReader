@@ -20,7 +20,6 @@ import com.squareup.picasso.Target;
 
 import butterknife.BindView;
 import me.exerosis.materialreader.R;
-import me.exerosis.materialreader.controller.feed.container.FloatingActionButtonBehavior;
 import me.exerosis.mvc.butterknife.ButterKnifeContainerView;
 
 import static java.lang.String.format;
@@ -42,10 +41,12 @@ public class FeedContainerView extends ButterKnifeContainerView implements FeedC
     public FeedContainerView(@NonNull LayoutInflater inflater) {
         super(inflater, R.layout.feed_container_view, R.id.feed_container_view);
 
+        //Handle hiding and showing FAB.
         behavior = new FloatingActionButtonBehavior(fab);
         ((CoordinatorLayout.LayoutParams) fab.getLayoutParams()).setBehavior(behavior);
         fab.invalidate();
 
+        //Handle nav item selected.
         navigation.setNavigationItemSelectedListener(item -> {
             drawer.closeDrawer(GravityCompat.START);
             return getListener().onNavigationItemSelected(item);
@@ -70,6 +71,7 @@ public class FeedContainerView extends ButterKnifeContainerView implements FeedC
     @Override
     public MenuItem addFeed(SyndFeed feed) {
         MenuItem item = navigation.getMenu().add(R.id.feed_container_view_menu, menuId++, Menu.NONE, feed.getTitle());
+        //Load in a favicon from the URL.
         Picasso.with(getRoot().getContext()).
                 load(format(FORMAT_FAVICON, feed.getLink())).
                 placeholder(R.drawable.ic_menu_gallery).
@@ -78,6 +80,7 @@ public class FeedContainerView extends ButterKnifeContainerView implements FeedC
                 centerCrop().into(new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                //Set the menu icon to the favicon.
                 item.setIcon(new BitmapDrawable(getRoot().getResources(), bitmap));
                 navigation.invalidate();
             }

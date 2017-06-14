@@ -47,6 +47,7 @@ public class FeedEntryHolderView extends ButterKnifeHolderView implements FeedEn
     public FeedEntryHolderView(@NonNull LayoutInflater inflater, @NonNull ViewGroup container, int type) {
         super(inflater, container, type == 0 ? R.layout.feed_entry_holder_view_text : type == 1 ? R.layout.feed_entry_holder_view_small : R.layout.feed_entry_holder_view_large);
 
+        //For certain views tell the staggered layout to let the view take an entire row.
         if (type != 2 && type != 0)
             ((StaggeredGridLayoutManager.LayoutParams) getRoot().getLayoutParams()).setFullSpan(true);
         else {
@@ -54,6 +55,7 @@ public class FeedEntryHolderView extends ButterKnifeHolderView implements FeedEn
             title.setMinLines(3);
         }
 
+        //When the show/hide button is clicked expand the description and animate the show/hide button.
         toggle.setOnClickListener(view -> {
             toggle.setChecked(shown ^= true);
             expandableLayout.setExpanded(shown, true);
@@ -62,6 +64,7 @@ public class FeedEntryHolderView extends ButterKnifeHolderView implements FeedEn
 
     @Override
     public void setEntry(Pair<SyndEntry, Bitmap> pair) {
+        //Format and display an entry and thumbnail.
         this.pair = pair;
         shown = false;
         expandableLayout.collapse(false);
@@ -72,8 +75,10 @@ public class FeedEntryHolderView extends ButterKnifeHolderView implements FeedEn
         title.setText(entry.getTitle());
         if (thumbnail != null)
             thumbnail.setImageBitmap(pair.second);
+        //Strip the HTML out of the description.
         description.setText(Jsoup.parse(entry.getDescription().getValue()).text().replace("\n", "").replace("\r", ""));
 
+        //Combine author and date.
         StringBuilder builder = new StringBuilder();
         if (entry.getAuthor() != null && !entry.getAuthor().isEmpty())
             builder.append(entry.getAuthor()).append(", ");
