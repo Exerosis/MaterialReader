@@ -1,8 +1,6 @@
 package me.exerosis.materialreader.view.feed.container;
 
-import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -16,11 +14,12 @@ import android.view.MenuItem;
 
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import butterknife.BindView;
 import me.exerosis.materialreader.R;
 import me.exerosis.mvc.butterknife.ButterKnifeContainerView;
+import rx.Observable;
+import rx.schedulers.Schedulers;
 
 import static java.lang.String.format;
 import static me.exerosis.materialreader.FeedUtils.FORMAT_FAVICON;
@@ -72,29 +71,38 @@ public class FeedContainerView extends ButterKnifeContainerView implements FeedC
     public MenuItem addFeed(SyndFeed feed) {
         MenuItem item = navigation.getMenu().add(R.id.feed_container_view_menu, menuId++, Menu.NONE, feed.getTitle());
         //Load in a favicon from the URL.
-        Picasso.with(getRoot().getContext()).
-                load(format(FORMAT_FAVICON, feed.getLink())).
-                placeholder(R.drawable.ic_menu_gallery).
-                error(R.drawable.ic_menu_gallery).
-                resizeDimen(R.dimen.menu_icon_size, R.dimen.menu_icon_size).
-                centerCrop().into(new Target() {
-            @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                //Set the menu icon to the favicon.
-                item.setIcon(new BitmapDrawable(getRoot().getResources(), bitmap));
-                navigation.invalidate();
-            }
-
-            @Override
-            public void onBitmapFailed(Drawable drawable) {
-                item.setIcon(drawable);
-            }
-
-            @Override
-            public void onPrepareLoad(Drawable drawable) {
-                item.setIcon(drawable);
-            }
+        Observable.fromCallable(() -> {
+            return Picasso.with(getRoot().getContext()).
+                    load(format(FORMAT_FAVICON, feed.getEntries().get(0).getLink())).
+                    placeholder(R.drawable.ic_menu_gallery).
+                    error(R.drawable.ic_menu_gallery).
+                    resizeDimen(R.dimen.menu_icon_size, R.dimen.menu_icon_size).centerCrop().get();
+        }).subscribeOn(Schedulers.io()).subscribe(bitmap -> {
+            item.setIcon(new BitmapDrawable(getRoot().getResources(), bitmap));
+        }, throwable -> {
+            throwable.printStackTrace();
+        }, () -> {
+            System.out.println("Done");
         });
+
+//                centerCrop().into(new Target() {
+//            @Override
+//            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+//                //Set the menu icon to the favicon.
+//                item.setIcon(new BitmapDrawable(getRoot().getResources(), bitmap));
+//                navigation.invalidate();
+//            }
+//
+//            @Override
+//            public void onBitmapFailed(Drawable drawable) {
+//                item.setIcon(drawable);
+//            }
+//
+//            @Override
+//            public void onPrepareLoad(Drawable drawable) {
+//                item.setIcon(drawable);
+//            }
+//        });
         item.setCheckable(true);
         return item;
     }
