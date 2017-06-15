@@ -86,7 +86,9 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         //If the menu item is the delete option then remove the selected feed.
         if (item.getItemId() == R.id.feed_container_view_menu_remove) {
-            store.clear(feeds.remove(selected));
+            String url = feeds.remove(selected);
+            store.clear(url);
+            preferences.edit().remove(url).apply();
             view.removeFeed(selected);
             onNavigationItemSelected(view.getHomeItem());
         } else {
