@@ -20,6 +20,7 @@ public class ObservableAdapter<ViewHolder extends RecyclerView.ViewHolder, Data>
     private final Func2<ViewGroup, Integer, ViewHolder> creator;
     private final Observable<Data> data;
     private final Func1<Data, Integer> typer;
+    private List<Data> allData = new ArrayList<>();
     private final SortedList<Data> dataList;
 
     public static <ViewHolder extends RecyclerView.ViewHolder, Data> ObservableAdapterBuilder<ViewHolder, Data> build(Observable<Data> data, Class<?> clazz, Action2<ViewHolder, Data> binder) {
@@ -110,14 +111,23 @@ public class ObservableAdapter<ViewHolder extends RecyclerView.ViewHolder, Data>
 
         if (clickListener != null)
             listeners.add(clickListener);
-        refresh();
+
+        data.subscribe(newData -> {
+            allData.add(newData);
+            dataList.add(newData);
+        }, Throwable::printStackTrace);
     }
 
     public void refresh() {
-        int size = dataList.size();
-        dataList.clear();
-        notifyItemRangeRemoved(0, size - 1);
-        data.subscribe(dataList::add, Throwable::printStackTrace);
+        data.toList().subscribe(newData -> {
+            for (Data data : allData)
+                if (!newData.contains(data))
+                    dataList.remove(data);
+            for (Data data : newData)
+                if (!allData.contains(data))
+                    dataList.add(data);
+            allData = newData;
+        }, Throwable::printStackTrace);
     }
 
 

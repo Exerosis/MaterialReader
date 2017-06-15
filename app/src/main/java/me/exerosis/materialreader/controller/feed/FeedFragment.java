@@ -1,5 +1,6 @@
 package me.exerosis.materialreader.controller.feed;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.nytimes.android.external.store.base.impl.Store;
+import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.thefinestartist.finestwebview.FinestWebView;
 
@@ -61,7 +63,12 @@ public class FeedFragment extends Fragment implements FeedController {
                 flatMap(url -> store.get(url)).
                 map(SyndFeed::getEntries).
                 flatMapIterable(l -> l).
-                flatMap(data -> FeedUtils.getImage(getContext(), data), Pair::new).
+                flatMap(data -> FeedUtils.getImage(getContext(), data), (entry, bitmap) -> new Pair<SyndEntry, Bitmap>(entry, bitmap) {
+                    @Override
+                    public boolean equals(Object o) {
+                        return o instanceof Pair && ((Pair) o).first instanceof SyndEntry && ((SyndEntry) ((Pair) o).first).getLink().equals(first.getLink());
+                    }
+                }).
                 subscribeOn(Schedulers.io()).
                 observeOn(AndroidSchedulers.mainThread()).doOnEach(data -> view.setLoading(false)), Pair.class, FeedEntryHolderView::setEntry).
                 onClick(data -> new FinestWebView.Builder(getActivity()).
@@ -82,7 +89,6 @@ public class FeedFragment extends Fragment implements FeedController {
                         backPressToClose(true).
                         setCustomAnimations(R.anim.activity_open_enter, R.anim.activity_open_exit, R.anim.activity_close_enter, R.anim.activity_close_exit).
                         show(data.first.getLink())).
-                sortWith((one, two) -> one.first.getPublishedDate().compareTo(two.first.getPublishedDate())).
                 withTypes(data -> {
                     //Find
                     if (data.second == null)
