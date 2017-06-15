@@ -26,4 +26,5 @@
 
     <string name="username">Example User</string>
     <string name="email">example.user@gmail.com</string>
+    <string name="menu_remove">Remove Feed</string>
 </resources>

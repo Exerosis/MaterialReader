@@ -16,7 +16,6 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import me.exerosis.materialreader.MaterialReader;
@@ -35,6 +34,7 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
     private AddStockDialog dialog;
     private Store<SyndFeed, String> store;
     private SharedPreferences preferences;
+    private MenuItem selected;
 
     @SuppressLint("ApplySharedPref")
     @Override
@@ -55,7 +55,7 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
         dialog.setListener(this);
 
         //--Toolbar--
-        setSupportActionBar(view.getToolbar());
+//        setSupportActionBar(view.getToolbar());
 
         //--Toggle--
         //Setup the hamburger button for nav drawer.
@@ -75,6 +75,7 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
                 subscribe(pair -> feeds.put(view.addFeed(pair.first), pair.second), Throwable::printStackTrace, () -> onNavigationItemSelected(view.getHomeItem().setChecked(true)));
     }
 
+
     @Override
     public void onAddClick() {
         //Show the add feed dialog when the FAB is clicked.
@@ -83,14 +84,21 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        view.getToolbar().setTitle(item.getTitle());
-        //If the map of feeds doesn't contain the given ID then it's the home feed, so display all the feeds and enable showing the FAB.
-        if (view.setHome(!feeds.containsKey(item))) {
-            Set<String> urls = preferences.getAll().keySet();
-            String[] s = urls.toArray(new String[urls.size()]);
-            display(s);
-        } else
-            display(feeds.get(item));
+        //If the menu item is the delete option then remove the selected feed.
+        if (item.getItemId() == R.id.feed_container_view_menu_remove) {
+            store.clear(feeds.remove(selected));
+            view.removeFeed(selected);
+            onNavigationItemSelected(view.getHomeItem());
+        } else {
+            //If the map of feeds doesn't contain the given ID then it's the home feed, so display all the feeds and enable showing the FAB.
+            view.getToolbar().setTitle(item.getTitle());
+            if (view.setHome(!feeds.containsKey(item)))
+                display(feeds.values().toArray(new String[feeds.values().size()]));
+            else {
+                selected = item;
+                display(feeds.get(item));
+            }
+        }
         return true;
     }
 

@@ -49,6 +49,6 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/feed_container_header_view"
-        app:menu="@menu/feed_container_menu" />
+        app:menu="@menu/feed_container_nav_menu" />
 
 </android.support.v4.widget.DrawerLayout>

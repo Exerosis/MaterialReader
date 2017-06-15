@@ -52,6 +52,9 @@ public class FeedContainerView extends ButterKnifeContainerView implements FeedC
             drawer.closeDrawer(GravityCompat.START);
             return getListener().onNavigationItemSelected(item);
         });
+
+        toolbar.inflateMenu(R.menu.feed_container_menu);
+        toolbar.setOnMenuItemClickListener(item -> getListener().onNavigationItemSelected(item));
     }
 
     @Override
@@ -93,6 +96,7 @@ public class FeedContainerView extends ButterKnifeContainerView implements FeedC
     @Override
     public boolean setHome(boolean home) {
         behavior.setHome(home);
+        toolbar.getMenu().getItem(0).setVisible(!home);
         return home;
     }
 
