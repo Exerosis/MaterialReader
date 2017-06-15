@@ -19,6 +19,7 @@ import butterknife.BindView;
 import me.exerosis.materialreader.R;
 import me.exerosis.mvc.butterknife.ButterKnifeContainerView;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 import static java.lang.String.format;
@@ -46,6 +47,7 @@ public class FeedContainerView extends ButterKnifeContainerView implements FeedC
         fab.invalidate();
 
         //Handle nav item selected.
+        navigation.setItemIconTintList(null);
         navigation.setNavigationItemSelectedListener(item -> {
             drawer.closeDrawer(GravityCompat.START);
             return getListener().onNavigationItemSelected(item);
@@ -70,39 +72,15 @@ public class FeedContainerView extends ButterKnifeContainerView implements FeedC
     @Override
     public MenuItem addFeed(SyndFeed feed) {
         MenuItem item = navigation.getMenu().add(R.id.feed_container_view_menu, menuId++, Menu.NONE, feed.getTitle());
-        //Load in a favicon from the URL.
-        Observable.fromCallable(() -> {
-            return Picasso.with(getRoot().getContext()).
-                    load(format(FORMAT_FAVICON, feed.getEntries().get(0).getLink())).
-                    placeholder(R.drawable.ic_menu_gallery).
-                    error(R.drawable.ic_menu_gallery).
-                    resizeDimen(R.dimen.menu_icon_size, R.dimen.menu_icon_size).centerCrop().get();
-        }).subscribeOn(Schedulers.io()).subscribe(bitmap -> {
-            item.setIcon(new BitmapDrawable(getRoot().getResources(), bitmap));
-        }, throwable -> {
-            throwable.printStackTrace();
-        }, () -> {
-            System.out.println("Done");
-        });
 
-//                centerCrop().into(new Target() {
-//            @Override
-//            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-//                //Set the menu icon to the favicon.
-//                item.setIcon(new BitmapDrawable(getRoot().getResources(), bitmap));
-//                navigation.invalidate();
-//            }
-//
-//            @Override
-//            public void onBitmapFailed(Drawable drawable) {
-//                item.setIcon(drawable);
-//            }
-//
-//            @Override
-//            public void onPrepareLoad(Drawable drawable) {
-//                item.setIcon(drawable);
-//            }
-//        });
+        //Load in a favicon from the URL as menu icon.
+        Observable.fromCallable(() -> Picasso.with(getRoot().getContext()).
+                load(format(FORMAT_FAVICON, feed.getEntries().get(0).getLink())).
+                placeholder(R.drawable.ic_menu_gallery).
+                error(R.drawable.ic_menu_gallery).
+                resizeDimen(R.dimen.menu_icon_size, R.dimen.menu_icon_size).centerCrop().get()).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(bitmap -> {
+            item.setIcon(new BitmapDrawable(getRoot().getResources(), bitmap));
+        });
         item.setCheckable(true);
         return item;
     }

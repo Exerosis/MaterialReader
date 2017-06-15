@@ -1,68 +1,127 @@
 package me.exerosis.mvc.rxjava;
 
+import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import rx.Observable;
+import rx.functions.Action1;
 import rx.functions.Action2;
 import rx.functions.Func1;
 import rx.functions.Func2;
 
 public class ObservableAdapter<ViewHolder extends RecyclerView.ViewHolder, Data> extends RecyclerView.Adapter<ViewHolder> {
-    private final List<Action2<Data, ViewHolder>> listeners = new ArrayList<>();
+    private final List<Action2<ViewHolder, Data>> listeners = new ArrayList<>();
     private final Action2<ViewHolder, Data> binder;
     private final Func2<ViewGroup, Integer, ViewHolder> creator;
-    private final Func1<Data, Integer> type;
-    private List<Data> data = new ArrayList<>();
-    private boolean selectSingle = false;
-    private ViewHolder selected;
+    private final Observable<Data> data;
+    private final Func1<Data, Integer> typer;
+    private final SortedList<Data> dataList;
 
-    public ObservableAdapter(Observable<List<Data>> dataObservable, Action2<ViewHolder, Data> binder, Func1<ViewGroup, ViewHolder> creator) {
-        this(dataObservable, entry -> 0, binder, creator, null);
+    public static <ViewHolder extends RecyclerView.ViewHolder, Data> ObservableAdapterBuilder<ViewHolder, Data> build(Observable<Data> data, Class<?> clazz, Action2<ViewHolder, Data> binder) {
+        return new ObservableAdapterBuilder<>(data, clazz, binder);
     }
 
-    public ObservableAdapter(Observable<List<Data>> dataObservable, Func1<Data, Integer> type, Action2<ViewHolder, Data> binder, Func1<ViewGroup, ViewHolder> creator) {
-        this(dataObservable, type, binder, creator, null);
+    public static class ObservableAdapterBuilder<ViewHolder extends RecyclerView.ViewHolder, Data> {
+        private final Observable<Data> data;
+        private final Class<?> clazz;
+        private final Action2<ViewHolder, Data> binder;
+        private Action2<ViewHolder, Data> clickListener;
+        private Comparator<Data> sorter;
+
+        public ObservableAdapterBuilder(Observable<Data> data, Class<?> clazz, Action2<ViewHolder, Data> binder) {
+            this.data = data;
+            this.clazz = clazz;
+            this.binder = binder;
+        }
+
+        public ObservableAdapterBuilder<ViewHolder, Data> sortWith(Comparator<Data> sorter) {
+            this.sorter = sorter;
+            return this;
+        }
+
+        public ObservableAdapterBuilder<ViewHolder, Data> onClick(Action1<Data> clickListener) {
+            return onClick(((viewHolder, data) -> clickListener.call(data)));
+        }
+
+        public ObservableAdapterBuilder<ViewHolder, Data> onClick(Action2<ViewHolder, Data> clickListener) {
+            this.clickListener = clickListener;
+            return this;
+        }
+
+        public ObservableAdapter<ViewHolder, Data> withTypes(Func1<Data, Integer> typer, Func2<ViewGroup, Integer, ViewHolder> creator) {
+            return new ObservableAdapter<>(data, clazz, typer, binder, creator, clickListener, sorter);
+        }
+
+        public ObservableAdapter<ViewHolder, Data> withoutTypes(Func1<ViewGroup, ViewHolder> creator) {
+            return withTypes(data -> 0, (viewGroup, type) -> creator.call(viewGroup));
+        }
     }
 
-    public ObservableAdapter(Observable<List<Data>> dataObservable, Action2<ViewHolder, Data> binder, Func1<ViewGroup, ViewHolder> creator, Action2<Data, ViewHolder> clickListener) {
-        this(dataObservable, entry -> 0, binder, (parent, type) -> creator.call(parent), clickListener);
-    }
-
-    public ObservableAdapter(Observable<List<Data>> dataObservable, Func1<Data, Integer> viewTyper, Action2<ViewHolder, Data> binder, Func1<ViewGroup, ViewHolder> creator, Action2<Data, ViewHolder> clickListener) {
-        this(dataObservable, viewTyper, binder, (parent, type) -> creator.call(parent), clickListener);
-    }
-
-    public ObservableAdapter(Observable<List<Data>> dataObservable, Action2<ViewHolder, Data> binder, Func2<ViewGroup, Integer, ViewHolder> creator) {
-        this(dataObservable, entry -> 0, binder, creator);
-    }
-
-    public ObservableAdapter(Observable<List<Data>> dataObservable, Func1<Data, Integer> type, Action2<ViewHolder, Data> binder, Func2<ViewGroup, Integer, ViewHolder> creator) {
-        this(dataObservable, type, binder, creator, null);
-    }
-
-    public ObservableAdapter(Observable<List<Data>> dataObservable, Func1<Data, Integer> type, Action2<ViewHolder, Data> binder, Func2<ViewGroup, Integer, ViewHolder> creator, Action2<Data, ViewHolder> clickListener) {
-        this.type = type;
+    @SuppressWarnings("unchecked")
+    private ObservableAdapter(Observable<Data> data, Class<?> clazz, Func1<Data, Integer> typer, Action2<ViewHolder, Data> binder, Func2<ViewGroup, Integer, ViewHolder> creator, Action2<ViewHolder, Data> clickListener, Comparator<Data> sorter) {
+        this.data = data;
+        this.typer = typer;
         this.binder = binder;
         this.creator = creator;
+
+        dataList = new SortedList<>((Class<Data>) clazz, new SortedList.Callback<Data>() {
+            @Override
+            public int compare(Data one, Data two) {
+                if (sorter == null)
+                    return 0;
+                return sorter.compare(one, two);
+            }
+
+            @Override
+            public void onChanged(int position, int count) {
+                notifyItemRangeChanged(position, count);
+            }
+
+            @Override
+            public boolean areContentsTheSame(Data oldItem, Data newItem) {
+                return oldItem.equals(newItem);
+            }
+
+            @Override
+            public boolean areItemsTheSame(Data item1, Data item2) {
+                return item1.equals(item2);
+            }
+
+            @Override
+            public void onInserted(int position, int count) {
+                notifyItemRangeInserted(position, count);
+            }
+
+            @Override
+            public void onRemoved(int position, int count) {
+                notifyItemRangeRemoved(position, count);
+            }
+
+            @Override
+            public void onMoved(int fromPosition, int toPosition) {
+                notifyItemMoved(fromPosition, toPosition);
+            }
+        });
+
         if (clickListener != null)
             listeners.add(clickListener);
-        dataObservable.subscribe(data -> {
-            this.data = data;
-            notifyDataSetChanged();
-        }, Throwable::printStackTrace);
+        refresh();
+    }
+
+    public void refresh() {
+        int size = dataList.size();
+        dataList.clear();
+        notifyItemRangeRemoved(0, size - 1);
+        data.subscribe(dataList::add, Throwable::printStackTrace);
     }
 
 
-    public ObservableAdapter<ViewHolder, Data> selectSingle() {
-        selectSingle ^= true;
-        return this;
-    }
-
-    public Action2<Data, ViewHolder> onClick(Action2<Data, ViewHolder> listener) {
+    public Action2<ViewHolder, Data> onClick(Action2<ViewHolder, Data> listener) {
         if (listeners.contains(listener)) {
             listeners.remove(listener);
             return null;
@@ -73,7 +132,7 @@ public class ObservableAdapter<ViewHolder extends RecyclerView.ViewHolder, Data>
 
     @Override
     public int getItemViewType(int position) {
-        return type.call(data.get(position));
+        return typer.call(dataList.get(position));
     }
 
     @Override
@@ -84,20 +143,14 @@ public class ObservableAdapter<ViewHolder extends RecyclerView.ViewHolder, Data>
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.itemView.setOnClickListener(view -> {
-            for (Action2<Data, ViewHolder> listener : listeners)
-                listener.call(data.get(position), holder);
-            if (selectSingle) {
-                if (selected != null)
-                    selected.itemView.setSelected(false);
-                selected = holder;
-                selected.itemView.setSelected(true);
-            }
+            for (Action2<ViewHolder, Data> listener : listeners)
+                listener.call(holder, dataList.get(position));
         });
-        binder.call(holder, data.get(position));
+        binder.call(holder, dataList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return dataList.size();
     }
 }

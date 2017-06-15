@@ -55,53 +55,53 @@ public class FeedFragment extends Fragment implements FeedController {
         view.setListener(this);
 
         //ReactiveX flow into an ObservableAdapter.
-        //From urls flatmaps to SyndFeeds, maps to lists of SyndEntries, flattens to a flow of SyndEntries
-        //Pairs them with their thumbnail images, sortes them by date. When the flow completes it hides the ProgressBar.
-        view.setAdapter(new ObservableAdapter<>(Observable.from(urls).
+        //From urls flat-maps to SyndFeeds, maps to lists of SyndEntries, flattens to a flow of SyndEntries
+        //Pairs them with their thumbnail images, sorts them by date. When the flow completes it hides the ProgressBar.
+        view.setAdapter(ObservableAdapter.build(Observable.from(urls).
                 flatMap(url -> store.get(url)).
                 map(SyndFeed::getEntries).
                 flatMapIterable(l -> l).
-                flatMap(entry -> FeedUtils.getImage(getContext(), entry), Pair::new).
-                toSortedList((one, two) -> one.first.getPublishedDate().compareTo(one.first.getPublishedDate())).
+                flatMap(data -> FeedUtils.getImage(getContext(), data), Pair::new).
                 subscribeOn(Schedulers.io()).
-                observeOn(AndroidSchedulers.mainThread()).doOnCompleted(() -> view.setLoading(false)), pair -> {
-            //Finds the correct view. Based on the thumbnail.
-            if (pair.second == null)
-                return 0;
-            double pixels = pair.second.getWidth() * pair.second.getHeight();
-            if (pixels <= 15000)
-                return 0;
-            if (pixels <= 40000)
-                return 1;
-            if (pixels <= 220000)
-                return 2;
-            return 3;
-        }, FeedEntryHolderView::setEntry, (parent, type) -> new FeedEntryHolderView(LayoutInflater.from(getContext()), parent, type), (entry, holder) -> {
-            //When an entry is clicked show a webview for it.
-            new FinestWebView.Builder(getActivity()).
-                    titleDefault(entry.first.getTitle()).
-                    toolbarScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS).
-                    toolbarColorRes(R.color.primary).
-                    dividerColorRes(R.color.divider).
-                    stringResShareVia(R.string.menu_share_via).
-                    stringResOpenWith(R.string.menu_open_with).
-                    webViewJavaScriptEnabled(true).
-                    webViewBlockNetworkLoads(false).
-                    statusBarColorRes(R.color.primary_dark).
-                    showSwipeRefreshLayout(false).
-                    titleColor(Color.WHITE).
-                    iconDefaultColor(Color.WHITE).
-                    progressBarHeight(applyDimension(COMPLEX_UNIT_DIP, 3, getResources().getDisplayMetrics())).
-                    progressBarColorRes(R.color.accent).
-                    backPressToClose(true).
-                    setCustomAnimations(R.anim.activity_open_enter, R.anim.activity_open_exit, R.anim.activity_close_enter, R.anim.activity_close_exit).
-                    show(entry.first.getLink());
-        }));
+                observeOn(AndroidSchedulers.mainThread()).doOnEach(data -> view.setLoading(false)), Pair.class, FeedEntryHolderView::setEntry).
+                onClick(data -> new FinestWebView.Builder(getActivity()).
+                        titleDefault(data.first.getTitle()).
+                        toolbarScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS).
+                        toolbarColorRes(R.color.primary).
+                        dividerColorRes(R.color.divider).
+                        stringResShareVia(R.string.menu_share_via).
+                        stringResOpenWith(R.string.menu_open_with).
+                        webViewJavaScriptEnabled(true).
+                        webViewBlockNetworkLoads(false).
+                        statusBarColorRes(R.color.primary_dark).
+                        showSwipeRefreshLayout(false).
+                        titleColor(Color.WHITE).
+                        iconDefaultColor(Color.WHITE).
+                        progressBarHeight(applyDimension(COMPLEX_UNIT_DIP, 3, getResources().getDisplayMetrics())).
+                        progressBarColorRes(R.color.accent).
+                        backPressToClose(true).
+                        setCustomAnimations(R.anim.activity_open_enter, R.anim.activity_open_exit, R.anim.activity_close_enter, R.anim.activity_close_exit).
+                        show(data.first.getLink())).
+                sortWith((one, two) -> one.first.getPublishedDate().compareTo(two.first.getPublishedDate())).
+                withTypes(data -> {
+                    //Find
+                    if (data.second == null)
+                        return 0;
+                    double pixels = data.second.getWidth() * data.second.getHeight();
+                    if (pixels <= 15000)
+                        return 0;
+                    if (pixels <= 40000)
+                        return 1;
+                    if (pixels <= 220000)
+                        return 2;
+                    return 3;
+                }, (parent, type) -> new FeedEntryHolderView(LayoutInflater.from(getContext()), parent, type)));
         return view.getRoot();
     }
 
     @Override
     public void onRefresh() {
+        ((ObservableAdapter) view.getAdapter()).refresh();
         view.setRefreshing(false);
     }
 }
