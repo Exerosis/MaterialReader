@@ -83,6 +83,7 @@ public class FeedContainerActivity extends AppCompatActivity implements FeedCont
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        view.getToolbar().setTitle(item.getTitle());
         //If the map of feeds doesn't contain the given ID then it's the home feed, so display all the feeds and enable showing the FAB.
         if (view.setHome(!feeds.containsKey(item))) {
             Set<String> urls = preferences.getAll().keySet();
