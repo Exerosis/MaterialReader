@@ -34,8 +34,7 @@
                 android:layout_weight="1"
                 android:ellipsize="end"
                 android:textColor="@color/primary_text"
-                android:textSize="18sp"
-                tools:text="Trump Broke Something Again At The Whitehouse Today" />
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/feed_entry_subtitle"
